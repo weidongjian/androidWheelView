@@ -10,19 +10,19 @@ import java.util.TimerTask;
 // Referenced classes of package com.qingchifan.view:
 //            LoopView
 
-final class z extends TimerTask {
+final class MTimer extends TimerTask {
 
     int a;
     int b;
     final int c;
-    final Timer d;
-    final LoopView e;
+    final Timer timer;
+    final LoopView loopView;
 
-    z(LoopView loopview, int i, Timer timer) {
+    MTimer(LoopView loopview, int i, Timer timer) {
         super();
-        e = loopview;
+        loopView = loopview;
         c = i;
-        d = timer;
+        this.timer = timer;
         a = 0x7fffffff;
         b = 0;
     }
@@ -30,13 +30,13 @@ final class z extends TimerTask {
     public final void run() {
         if (a == 0x7fffffff) {
             if (c < 0) {
-                if ((float) (-c) > (e.l * (float) e.h) / 2.0F) {
-                    a = (int) (-e.l * (float) e.h - (float) c);
+                if ((float) (-c) > (loopView.l * (float) loopView.h) / 2.0F) {
+                    a = (int) (-loopView.l * (float) loopView.h - (float) c);
                 } else {
                     a = -c;
                 }
-            } else if ((float) c > (e.l * (float) e.h) / 2.0F) {
-                a = (int) (e.l * (float) e.h - (float) c);
+            } else if ((float) c > (loopView.l * (float) loopView.h) / 2.0F) {
+                a = (int) (loopView.l * (float) loopView.h - (float) c);
             } else {
                 a = -c;
             }
@@ -50,13 +50,13 @@ final class z extends TimerTask {
             }
         }
         if (Math.abs(a) <= 0) {
-            d.cancel();
-            e.C.sendEmptyMessage(3000);
+            timer.cancel();
+            loopView.C.sendEmptyMessage(3000);
             return;
         } else {
-            LoopView loopview = e;
+            LoopView loopview = loopView;
             loopview.B = loopview.B + b;
-            e.C.sendEmptyMessage(1000);
+            loopView.C.sendEmptyMessage(1000);
             a = a - b;
             return;
         }

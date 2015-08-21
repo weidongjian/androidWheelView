@@ -10,19 +10,18 @@ import java.util.TimerTask;
 // Referenced classes of package com.qingchifan.view:
 //            LoopView
 
-final class ac extends TimerTask {
+final class LoopTimerTask extends TimerTask {
 
     float a;
     final float b;
-    final Timer c;
-    final LoopView d;
+    final Timer timer;
+    final LoopView loopView;
 
-    ac(LoopView loopview, float f, Timer timer) {
+    LoopTimerTask(LoopView loopview, float f, Timer timer) {
         super();
-        d = loopview;
+        loopView = loopview;
         b = f;
-        c = timer;
-
+        this.timer = timer;
         a = 2.147484E+09F;
     }
 
@@ -39,19 +38,19 @@ final class ac extends TimerTask {
             }
         }
         if (Math.abs(a) >= 0.0F && Math.abs(a) <= 20F) {
-            c.cancel();
-            d.C.sendEmptyMessage(2000);
+            timer.cancel();
+            loopView.C.sendEmptyMessage(2000);
             return;
         }
         int i = (int) ((a * 10F) / 1000F);
-        LoopView loopview = d;
+        LoopView loopview = loopView;
         loopview.B = loopview.B - i;
-        if (!d.m) {
-            if (d.B <= (int) ((float) (-d.q) * (d.l * (float) d.h))) {
+        if (!loopView.m) {
+            if (loopView.B <= (int) ((float) (-loopView.q) * (loopView.l * (float) loopView.h))) {
                 a = 40F;
-                d.B = (int) ((float) (-d.q) * (d.l * (float) d.h));
-            } else if (d.B >= (int) ((float) (d.e.size() - 1 - d.q) * (d.l * (float) d.h))) {
-                d.B = (int) ((float) (d.e.size() - 1 - d.q) * (d.l * (float) d.h));
+                loopView.B = (int) ((float) (-loopView.q) * (loopView.l * (float) loopView.h));
+            } else if (loopView.B >= (int) ((float) (loopView.e.size() - 1 - loopView.q) * (loopView.l * (float) loopView.h))) {
+                loopView.B = (int) ((float) (loopView.e.size() - 1 - loopView.q) * (loopView.l * (float) loopView.h));
                 a = -40F;
             }
         }
@@ -60,6 +59,6 @@ final class ac extends TimerTask {
         } else {
             a = a - 20F;
         }
-        d.C.sendEmptyMessage(1000);
+        loopView.C.sendEmptyMessage(1000);
     }
 }

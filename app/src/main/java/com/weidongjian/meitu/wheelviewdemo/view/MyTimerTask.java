@@ -10,19 +10,19 @@ import java.util.TimerTask;
 // Referenced classes of package com.qingchifan.view:
 //            LoopView
 
-final class y extends TimerTask {
+final class MyTimerTask extends TimerTask {
 
     float a;
     float b;
     final int c;
-    final Timer d;
-    final LoopView e;
+    final Timer timer;
+    final LoopView loopView;
 
-    y(LoopView loopview, int i, Timer timer) {
+    MyTimerTask(LoopView loopview, int i, Timer timer) {
         super();
-        e = loopview;
+        this.loopView = loopview;
         c = i;
-        d = timer;
+        this.timer = timer;
 
         a = 2.147484E+09F;
         b = 0.0F;
@@ -30,16 +30,16 @@ final class y extends TimerTask {
 
     public final void run() {
         if (a == 2.147484E+09F) {
-            a = (float) (c - LoopView.a(e)) * e.l * (float) e.h;
-            if (c > LoopView.a(e)) {
+            a = (float) (c - LoopView.a(loopView)) * loopView.l * (float) loopView.h;
+            if (c > LoopView.a(loopView)) {
                 b = -1000F;
             } else {
                 b = 1000F;
             }
         }
         if (Math.abs(a) < 1.0F) {
-            d.cancel();
-            e.C.sendEmptyMessage(2000);
+            timer.cancel();
+            loopView.C.sendEmptyMessage(2000);
             return;
         }
         int j = (int) ((b * 10F) / 1000F);
@@ -47,10 +47,10 @@ final class y extends TimerTask {
         if (Math.abs(a) < (float) Math.abs(j)) {
             i = (int) (-a);
         }
-        LoopView loopview = e;
+        LoopView loopview = loopView;
         loopview.B = loopview.B - i;
         float f = a;
         a = (float) i + f;
-        e.C.sendEmptyMessage(1000);
+        loopView.C.sendEmptyMessage(1000);
     }
 }

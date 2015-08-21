@@ -9,11 +9,11 @@ import android.view.MotionEvent;
 // Referenced classes of package com.qingchifan.view:
 //            LoopView
 
-final class aa extends android.view.GestureDetector.SimpleOnGestureListener {
+final class LoopViewGestureListener extends android.view.GestureDetector.SimpleOnGestureListener {
 
     final LoopView loopView;
 
-    aa(LoopView loopview) {
+    LoopViewGestureListener(LoopView loopview) {
         super();
         loopView = loopview;
     }

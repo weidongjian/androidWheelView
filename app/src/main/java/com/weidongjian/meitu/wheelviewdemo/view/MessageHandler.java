@@ -10,11 +10,11 @@ import android.os.Message;
 // Referenced classes of package com.qingchifan.view:
 //            LoopView
 
-final class ab extends Handler {
+final class MessageHandler extends Handler {
 
     final LoopView a;
 
-    ab(LoopView loopview) {
+    MessageHandler(LoopView loopview) {
         super();
         a = loopview;
     }

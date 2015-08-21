@@ -7,20 +7,20 @@ package com.weidongjian.meitu.wheelviewdemo.view;
 // Referenced classes of package com.qingchifan.view:
 //            LoopView, ae
 
-final class ad implements Runnable {
+final class LoopRunnable implements Runnable {
 
-    final LoopView a;
+    final LoopView loopView;
 
-    ad(LoopView loopview) {
+    LoopRunnable(LoopView loopview) {
         super();
-        a = loopview;
+        loopView = loopview;
 
     }
 
     public final void run() {
-        ae ae1 = a.D;
-        int i = LoopView.a(a);
-        a.e.get(LoopView.a(a));
+        ae ae1 = loopView.D;
+        int i = LoopView.a(loopView);
+        loopView.e.get(LoopView.a(loopView));
         ae1.a(i);
     }
 }

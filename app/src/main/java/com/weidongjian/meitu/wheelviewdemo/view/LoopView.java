@@ -68,8 +68,8 @@ public class LoopView extends View {
         y = 0.0F;
         z = 0.0F;
         B = 0;
-        G = new aa(this);
-        C = new ab(this);
+        G = new LoopViewGestureListener(this);
+        C = new MessageHandler(this);
         a = context;
         a(16F);
     }
@@ -88,8 +88,8 @@ public class LoopView extends View {
         y = 0.0F;
         z = 0.0F;
         B = 0;
-        G = new aa(this);
-        C = new ab(this);
+        G = new LoopViewGestureListener(this);
+        C = new MessageHandler(this);
         a = context;
         a(16F);
     }
@@ -108,8 +108,8 @@ public class LoopView extends View {
         y = 0.0F;
         z = 0.0F;
         B = 0;
-        G = new aa(this);
-        C = new ab(this);
+        G = new LoopViewGestureListener(this);
+        C = new MessageHandler(this);
         a = context;
         a(16F);
     }
@@ -186,7 +186,7 @@ public class LoopView extends View {
         int i1 = (int) ((float) B % (l * (float) h));
         Timer timer = new Timer();
         A = timer;
-        timer.schedule(new z(this, i1, timer), 0L, 10L);
+        timer.schedule(new MTimer(this, i1, timer), 0L, 10L);
     }
 
     public final void a() {
@@ -220,18 +220,18 @@ public class LoopView extends View {
     protected final void b(float f1) {
         Timer timer = new Timer();
         A = timer;
-        timer.schedule(new ac(this, f1, timer), 0L, 20L);
+        timer.schedule(new LoopTimerTask(this, f1, timer), 0L, 20L);
     }
 
     protected final void b(int i1) {
         Timer timer = new Timer();
         A = timer;
-        timer.schedule(new y(this, i1, timer), 0L, 20L);
+        timer.schedule(new MyTimerTask(this, i1, timer), 0L, 20L);
     }
 
     protected final void c() {
         if (D != null) {
-            (new Handler()).postDelayed(new ad(this), 200L);
+            (new Handler()).postDelayed(new LoopRunnable(this), 200L);
         }
     }
 
