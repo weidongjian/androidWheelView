@@ -39,18 +39,18 @@ final class LoopTimerTask extends TimerTask {
         }
         if (Math.abs(a) >= 0.0F && Math.abs(a) <= 20F) {
             timer.cancel();
-            loopView.C.sendEmptyMessage(2000);
+            loopView.handler.sendEmptyMessage(2000);
             return;
         }
         int i = (int) ((a * 10F) / 1000F);
         LoopView loopview = loopView;
-        loopview.B = loopview.B - i;
-        if (!loopView.m) {
-            if (loopView.B <= (int) ((float) (-loopView.q) * (loopView.l * (float) loopView.h))) {
+        loopview.totalScrollY = loopview.totalScrollY - i;
+        if (!loopView.isLoop) {
+            if (loopView.totalScrollY <= (int) ((float) (-loopView.positon) * (loopView.l * (float) loopView.h))) {
                 a = 40F;
-                loopView.B = (int) ((float) (-loopView.q) * (loopView.l * (float) loopView.h));
-            } else if (loopView.B >= (int) ((float) (loopView.e.size() - 1 - loopView.q) * (loopView.l * (float) loopView.h))) {
-                loopView.B = (int) ((float) (loopView.e.size() - 1 - loopView.q) * (loopView.l * (float) loopView.h));
+                loopView.totalScrollY = (int) ((float) (-loopView.positon) * (loopView.l * (float) loopView.h));
+            } else if (loopView.totalScrollY >= (int) ((float) (loopView.arrayList.size() - 1 - loopView.positon) * (loopView.l * (float) loopView.h))) {
+                loopView.totalScrollY = (int) ((float) (loopView.arrayList.size() - 1 - loopView.positon) * (loopView.l * (float) loopView.h));
                 a = -40F;
             }
         }
@@ -59,6 +59,6 @@ final class LoopTimerTask extends TimerTask {
         } else {
             a = a - 20F;
         }
-        loopView.C.sendEmptyMessage(1000);
+        loopView.handler.sendEmptyMessage(1000);
     }
 }

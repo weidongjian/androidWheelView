@@ -7,9 +7,6 @@ package com.weidongjian.meitu.wheelviewdemo.view;
 import java.util.Timer;
 import java.util.TimerTask;
 
-// Referenced classes of package com.qingchifan.view:
-//            LoopView
-
 final class MTimer extends TimerTask {
 
     int a;
@@ -51,12 +48,12 @@ final class MTimer extends TimerTask {
         }
         if (Math.abs(a) <= 0) {
             timer.cancel();
-            loopView.C.sendEmptyMessage(3000);
+            loopView.handler.sendEmptyMessage(3000);
             return;
         } else {
             LoopView loopview = loopView;
-            loopview.B = loopview.B + b;
-            loopView.C.sendEmptyMessage(1000);
+            loopview.totalScrollY = loopview.totalScrollY + b;
+            loopView.handler.sendEmptyMessage(1000);
             a = a - b;
             return;
         }

@@ -5,8 +5,8 @@
 package com.weidongjian.meitu.wheelviewdemo.view;
 
 
-public interface ae
+public interface LoopListener
 {
 
-    public abstract void a(int i);
+    public abstract void onItemSelect(int item);
 }

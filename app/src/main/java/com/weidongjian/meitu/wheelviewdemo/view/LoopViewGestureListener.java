@@ -19,8 +19,8 @@ final class LoopViewGestureListener extends android.view.GestureDetector.SimpleO
     }
 
     public final boolean onDown(MotionEvent motionevent) {
-        if (loopView.A != null) {
-            loopView.A.cancel();
+        if (loopView.mTimer != null) {
+            loopView.mTimer.cancel();
         }
         return true;
     }

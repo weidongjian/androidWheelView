@@ -39,7 +39,7 @@ final class MyTimerTask extends TimerTask {
         }
         if (Math.abs(a) < 1.0F) {
             timer.cancel();
-            loopView.C.sendEmptyMessage(2000);
+            loopView.handler.sendEmptyMessage(2000);
             return;
         }
         int j = (int) ((b * 10F) / 1000F);
@@ -48,9 +48,9 @@ final class MyTimerTask extends TimerTask {
             i = (int) (-a);
         }
         LoopView loopview = loopView;
-        loopview.B = loopview.B - i;
+        loopview.totalScrollY = loopview.totalScrollY - i;
         float f = a;
         a = (float) i + f;
-        loopView.C.sendEmptyMessage(1000);
+        loopView.handler.sendEmptyMessage(1000);
     }
 }

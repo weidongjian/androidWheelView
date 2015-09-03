@@ -5,7 +5,7 @@
 package com.weidongjian.meitu.wheelviewdemo.view;
 
 // Referenced classes of package com.qingchifan.view:
-//            LoopView, ae
+//            LoopView, LoopListener
 
 final class LoopRunnable implements Runnable {
 
@@ -18,9 +18,9 @@ final class LoopRunnable implements Runnable {
     }
 
     public final void run() {
-        ae ae1 = loopView.D;
+        LoopListener listener = loopView.loopListener;
         int i = LoopView.a(loopView);
-        loopView.e.get(LoopView.a(loopView));
-        ae1.a(i);
+        loopView.arrayList.get(LoopView.a(loopView));
+        listener.onItemSelect(i);
     }
 }

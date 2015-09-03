@@ -20,30 +20,30 @@ import java.util.Timer;
  */
 public class LoopView extends View {
 
-    Timer A;
-    int B;
-    Handler C;
-    ae D;
-    private GestureDetector E;
+    Timer mTimer;
+    int totalScrollY;
+    Handler handler;
+    LoopListener loopListener;
+    private GestureDetector gestureDetector;
     private int F;
-    private android.view.GestureDetector.SimpleOnGestureListener G;
-    Context a;
-    Paint b;
-    Paint c;
-    Paint d;
-    ArrayList e;
-    int f;
+    private android.view.GestureDetector.SimpleOnGestureListener simpleOnGestureListener;
+    Context context;
+    Paint paintA;
+    Paint paintB;
+    Paint paintC;
+    ArrayList arrayList;
+    int textSize;
     int g;
     int h;
-    int i;
-    int j;
-    int k;
+    int colorGray;
+    int colorBlack;
+    int colorGrayLight;
     float l;
-    boolean m;
+    boolean isLoop;
     int n;
     int o;
     int p;
-    int q;
+    int positon;
     int r;
     int s;
     int t;
@@ -56,62 +56,36 @@ public class LoopView extends View {
 
     public LoopView(Context context) {
         super(context);
-        f = 0;
-        i = 0xffafafaf;
-        j = 0xff313131;
-        k = 0xffc5c5c5;
-        l = 2.0F;
-        m = true;
-        q = -1;
-        r = 9;
-        x = 0.0F;
-        y = 0.0F;
-        z = 0.0F;
-        B = 0;
-        G = new LoopViewGestureListener(this);
-        C = new MessageHandler(this);
-        a = context;
-        a(16F);
+        initLoopView(context);
     }
 
     public LoopView(Context context, AttributeSet attributeset) {
         super(context, attributeset);
-        f = 0;
-        i = 0xffafafaf;
-        j = 0xff313131;
-        k = 0xffc5c5c5;
-        l = 2.0F;
-        m = true;
-        q = -1;
-        r = 9;
-        x = 0.0F;
-        y = 0.0F;
-        z = 0.0F;
-        B = 0;
-        G = new LoopViewGestureListener(this);
-        C = new MessageHandler(this);
-        a = context;
-        a(16F);
+        initLoopView(context);
     }
 
     public LoopView(Context context, AttributeSet attributeset, int i1) {
         super(context, attributeset, i1);
-        f = 0;
-        i = 0xffafafaf;
-        j = 0xff313131;
-        k = 0xffc5c5c5;
+        initLoopView(context);
+    }
+
+    private void initLoopView(Context context) {
+        textSize = 0;
+        colorGray = 0xffafafaf;
+        colorBlack = 0xff313131;
+        colorGrayLight = 0xffc5c5c5;
         l = 2.0F;
-        m = true;
-        q = -1;
+        isLoop = true;
+        positon = -1;
         r = 9;
         x = 0.0F;
         y = 0.0F;
         z = 0.0F;
-        B = 0;
-        G = new LoopViewGestureListener(this);
-        C = new MessageHandler(this);
-        a = context;
-        a(16F);
+        totalScrollY = 0;
+        simpleOnGestureListener = new LoopViewGestureListener(this);
+        handler = new MessageHandler(this);
+        this.context = context;
+        setTextSize(16F);
     }
 
     static int a(LoopView loopview) {
@@ -123,57 +97,57 @@ public class LoopView extends View {
     }
 
     private void d() {
-        if (e == null) {
+        if (arrayList == null) {
             return;
         }
-        b = new Paint();
-        b.setColor(i);
-        b.setAntiAlias(true);
-        b.setTypeface(Typeface.MONOSPACE);
-        b.setTextSize(f);
-        c = new Paint();
-        c.setColor(j);
-        c.setAntiAlias(true);
-        c.setTextScaleX(1.05F);
-        c.setTypeface(Typeface.MONOSPACE);
-        c.setTextSize(f);
-        d = new Paint();
-        d.setColor(k);
-        d.setAntiAlias(true);
-        d.setTypeface(Typeface.MONOSPACE);
-        d.setTextSize(f);
+        paintA = new Paint();
+        paintA.setColor(colorGray);
+        paintA.setAntiAlias(true);
+        paintA.setTypeface(Typeface.MONOSPACE);
+        paintA.setTextSize(textSize);
+        paintB = new Paint();
+        paintB.setColor(colorBlack);
+        paintB.setAntiAlias(true);
+        paintB.setTextScaleX(1.05F);
+        paintB.setTypeface(Typeface.MONOSPACE);
+        paintB.setTextSize(textSize);
+        paintC = new Paint();
+        paintC.setColor(colorGrayLight);
+        paintC.setAntiAlias(true);
+        paintC.setTypeface(Typeface.MONOSPACE);
+        paintC.setTextSize(textSize);
         if (android.os.Build.VERSION.SDK_INT >= 11) {
             setLayerType(1, null);
         }
-        E = new GestureDetector(a, G);
-        E.setIsLongpressEnabled(false);
+        gestureDetector = new GestureDetector(context, simpleOnGestureListener);
+        gestureDetector.setIsLongpressEnabled(false);
         e();
         t = (int) ((float) h * l * (float) (r - 1));
-        s = (int) ((double) (t * 2) / 3.1415926535897931D);
-        u = (int) ((double) t / 3.1415926535897931D);
-        v = g + f;
+        s = (int) ((double) (t * 2) / Math.PI);
+        u = (int) ((double) t / Math.PI);
+        v = g + textSize;
         n = (int) (((float) s - l * (float) h) / 2.0F);
         o = (int) (((float) s + l * (float) h) / 2.0F);
-        if (q == -1) {
-            if (m) {
-                q = (e.size() + 1) / 2;
+        if (positon == -1) {
+            if (isLoop) {
+                positon = (arrayList.size() + 1) / 2;
             } else {
-                q = 0;
+                positon = 0;
             }
         }
-        p = q;
+        p = positon;
     }
 
     private void e() {
         Rect rect = new Rect();
-        for (int i1 = 0; i1 < e.size(); i1++) {
-            String s1 = (String) e.get(i1);
-            c.getTextBounds(s1, 0, s1.length(), rect);
+        for (int i1 = 0; i1 < arrayList.size(); i1++) {
+            String s1 = (String) arrayList.get(i1);
+            paintB.getTextBounds(s1, 0, s1.length(), rect);
             int j1 = rect.width();
             if (j1 > g) {
                 g = j1;
             }
-            c.getTextBounds("\u661F\u671F", 0, 2, rect);
+            paintB.getTextBounds("\u661F\u671F", 0, 2, rect);
             j1 = rect.height();
             if (j1 > h) {
                 h = j1;
@@ -183,32 +157,32 @@ public class LoopView extends View {
     }
 
     private void f() {
-        int i1 = (int) ((float) B % (l * (float) h));
+        int i1 = (int) ((float) totalScrollY % (l * (float) h));
         Timer timer = new Timer();
-        A = timer;
+        mTimer = timer;
         timer.schedule(new MTimer(this, i1, timer), 0L, 10L);
     }
 
-    public final void a() {
-        m = false;
+    public final void setNotLoop() {
+        isLoop = false;
     }
 
-    public final void a(float f1) {
-        if (f1 > 0.0F) {
-            f = (int) (a.getResources().getDisplayMetrics().density * f1);
+    public final void setTextSize(float size) {
+        if (size > 0.0F) {
+            textSize = (int) (context.getResources().getDisplayMetrics().density * size);
         }
     }
 
-    public final void a(int i1) {
-        q = i1;
+    public final void setPosition(int position) {
+        this.positon = position;
     }
 
-    public final void a(ae ae) {
-        D = ae;
+    public final void setListener(LoopListener LoopListener) {
+        loopListener = LoopListener;
     }
 
-    public final void a(ArrayList arraylist) {
-        e = arraylist;
+    public final void setArrayList(ArrayList arraylist) {
+        arrayList = arraylist;
         d();
         invalidate();
     }
@@ -219,80 +193,80 @@ public class LoopView extends View {
 
     protected final void b(float f1) {
         Timer timer = new Timer();
-        A = timer;
+        mTimer = timer;
         timer.schedule(new LoopTimerTask(this, f1, timer), 0L, 20L);
     }
 
     protected final void b(int i1) {
         Timer timer = new Timer();
-        A = timer;
+        mTimer = timer;
         timer.schedule(new MyTimerTask(this, i1, timer), 0L, 20L);
     }
 
     protected final void c() {
-        if (D != null) {
+        if (loopListener != null) {
             (new Handler()).postDelayed(new LoopRunnable(this), 200L);
         }
     }
 
     protected void onDraw(Canvas canvas) {
         String as[];
-        if (e == null) {
+        if (arrayList == null) {
             super.onDraw(canvas);
             return;
         }
         as = new String[r];
-        w = (int) ((float) B / (l * (float) h));
-        p = q + w % e.size();
-        Log.i("test", (new StringBuilder("scrollY1=")).append(B).toString());
+        w = (int) ((float) totalScrollY / (l * (float) h));
+        p = positon + w % arrayList.size();
+        Log.i("test", (new StringBuilder("scrollY1=")).append(totalScrollY).toString());
         Log.i("test", (new StringBuilder("change=")).append(w).toString());
         Log.i("test", (new StringBuilder("lineSpacingMultiplier * maxTextHeight=")).append(l * (float) h).toString());
         Log.i("test", (new StringBuilder("preCurrentIndex=")).append(p).toString());
         int i1;
-        if (!m) {
+        if (!isLoop) {
             if (p < 0) {
                 p = 0;
             }
-            if (p > e.size() - 1) {
-                p = e.size() - 1;
+            if (p > arrayList.size() - 1) {
+                p = arrayList.size() - 1;
             }
             // break;
         } else {
             if (p < 0) {
-                p = e.size() + p;
+                p = arrayList.size() + p;
             }
-            if (p > e.size() - 1) {
-                p = p - e.size();
+            if (p > arrayList.size() - 1) {
+                p = p - arrayList.size();
             }
             // continue;
         }
         do {
-            int j2 = (int) ((float) B % (l * (float) h));
+            int j2 = (int) ((float) totalScrollY % (l * (float) h));
             int k1 = 0;
             while (k1 < r) {
                 int l1 = p - (4 - k1);
-                if (m) {
+                if (isLoop) {
                     i1 = l1;
                     if (l1 < 0) {
-                        i1 = l1 + e.size();
+                        i1 = l1 + arrayList.size();
                     }
                     l1 = i1;
-                    if (i1 > e.size() - 1) {
-                        l1 = i1 - e.size();
+                    if (i1 > arrayList.size() - 1) {
+                        l1 = i1 - arrayList.size();
                     }
-                    as[k1] = (String) e.get(l1);
+                    as[k1] = (String) arrayList.get(l1);
                 } else if (l1 < 0) {
                     as[k1] = "";
-                } else if (l1 > e.size() - 1) {
+                } else if (l1 > arrayList.size() - 1) {
                     as[k1] = "";
                 } else {
-                    as[k1] = (String) e.get(l1);
+                    as[k1] = (String) arrayList.get(l1);
                 }
                 k1++;
             }
             k1 = (v - g) / 2;
-            canvas.drawLine(0.0F, n, v, n, d);
-            canvas.drawLine(0.0F, o, v, o, d);
+            canvas.drawLine(0.0F, n, v, n, paintC);
+            canvas.drawLine(0.0F, o, v, o, paintC);
             int j1 = 0;
             while (j1 < r) {
                 canvas.save();
@@ -307,28 +281,28 @@ public class LoopView extends View {
                     if (i2 <= n && h + i2 >= n) {
                         canvas.save();
                         canvas.clipRect(0, 0, v, n - i2);
-                        canvas.drawText(as[j1], k1, h, b);
+                        canvas.drawText(as[j1], k1, h, paintA);
                         canvas.restore();
                         canvas.save();
                         canvas.clipRect(0, n - i2, v, (int) ((float) h * l));
-                        canvas.drawText(as[j1], k1, h, c);
+                        canvas.drawText(as[j1], k1, h, paintB);
                         canvas.restore();
                     } else if (i2 <= o && h + i2 >= o) {
                         canvas.save();
                         canvas.clipRect(0, 0, v, o - i2);
-                        canvas.drawText(as[j1], k1, h, c);
+                        canvas.drawText(as[j1], k1, h, paintB);
                         canvas.restore();
                         canvas.save();
                         canvas.clipRect(0, o - i2, v, (int) ((float) h * l));
-                        canvas.drawText(as[j1], k1, h, b);
+                        canvas.drawText(as[j1], k1, h, paintA);
                         canvas.restore();
                     } else if (i2 >= n && h + i2 <= o) {
                         canvas.clipRect(0, 0, v, (int) ((float) h * l));
-                        canvas.drawText(as[j1], k1, h, c);
-                        F = e.indexOf(as[j1]);
+                        canvas.drawText(as[j1], k1, h, paintB);
+                        F = arrayList.indexOf(as[j1]);
                     } else {
                         canvas.clipRect(0, 0, v, (int) ((float) h * l));
-                        canvas.drawText(as[j1], k1, h, b);
+                        canvas.drawText(as[j1], k1, h, paintA);
                     }
                     canvas.restore();
                 }
@@ -353,30 +327,30 @@ public class LoopView extends View {
                 y = motionevent.getRawY();
                 z = x - y;
                 x = y;
-                B = (int) ((float) B + z);
-                if (!m) {
-                    if (B > (int) ((float) (-q) * (l * (float) h))) {
+                totalScrollY = (int) ((float) totalScrollY + z);
+                if (!isLoop) {
+                    if (totalScrollY > (int) ((float) (-positon) * (l * (float) h))) {
                         break; /* Loop/switch isn't completed */
                     }
-                    B = (int) ((float) (-q) * (l * (float) h));
+                    totalScrollY = (int) ((float) (-positon) * (l * (float) h));
                 }
                 break;
             case MotionEvent.ACTION_UP:
             default:
-                if (!E.onTouchEvent(motionevent) && motionevent.getAction() == 1) {
+                if (!gestureDetector.onTouchEvent(motionevent) && motionevent.getAction() == 1) {
                     f();
                 }
                 return true;
         }
 
-        if (B < (int)((float)(e.size() - 1 - q) * (l * (float)h))) {
+        if (totalScrollY < (int)((float)(arrayList.size() - 1 - positon) * (l * (float)h))) {
             invalidate();
         }else {
-            B = (int)((float)(e.size() - 1 - q) * (l * (float)h));
+            totalScrollY = (int)((float)(arrayList.size() - 1 - positon) * (l * (float)h));
             invalidate();
         }
 
-        if (!E.onTouchEvent(motionevent) && motionevent.getAction() == 1) {
+        if (!gestureDetector.onTouchEvent(motionevent) && motionevent.getAction() == 1) {
             f();
         }
         return true;
