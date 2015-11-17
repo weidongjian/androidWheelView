@@ -4,57 +4,52 @@
 
 package com.weidongjian.meitu.wheelviewdemo.view;
 
-import java.util.Timer;
 import java.util.TimerTask;
 
 final class MTimer extends TimerTask {
 
-    int a;
-    int b;
-    final int c;
-    final Timer timer;
+    int realTotalOffset;
+    int realOffset;
+    int offset;
     final LoopView loopView;
 
-    MTimer(LoopView loopview, int i, Timer timer) {
+    MTimer(LoopView loopview, int offset) {
         super();
-        loopView = loopview;
-        c = i;
-        this.timer = timer;
-        a = 0x7fffffff;
-        b = 0;
+        this.loopView = loopview;
+        this.offset = offset;
+        realTotalOffset = Integer.MAX_VALUE;
+        realOffset = 0;
     }
 
+    @Override
     public final void run() {
-        if (a == 0x7fffffff) {
-            if (c < 0) {
-                if ((float) (-c) > (loopView.l * (float) loopView.h) / 2.0F) {
-                    a = (int) (-loopView.l * (float) loopView.h - (float) c);
-                } else {
-                    a = -c;
-                }
-            } else if ((float) c > (loopView.l * (float) loopView.h) / 2.0F) {
-                a = (int) (loopView.l * (float) loopView.h - (float) c);
+        if (realTotalOffset == Integer.MAX_VALUE) {
+            float itemHeight = loopView.lineSpacingMultiplier * loopView.maxTextHeight;
+            // ���ƫ����Ϊ����תΪ����
+            offset = (int)((offset + itemHeight) % itemHeight);
+            if ((float) offset > itemHeight / 2.0F) {
+                realTotalOffset = (int) (itemHeight - (float) offset);
             } else {
-                a = -c;
+                realTotalOffset = -offset;
             }
         }
-        b = (int) ((float) a * 0.1F);
-        if (b == 0) {
-            if (a < 0) {
-                b = -1;
+        realOffset = (int) ((float) realTotalOffset * 0.1F);
+
+        if (realOffset == 0) {
+            if (realTotalOffset < 0) {
+                realOffset = -1;
             } else {
-                b = 1;
+                realOffset = 1;
             }
         }
-        if (Math.abs(a) <= 0) {
-            timer.cancel();
+        if (Math.abs(realTotalOffset) <= 0) {
+            loopView.cancelFuture();
             loopView.handler.sendEmptyMessage(3000);
             return;
         } else {
-            LoopView loopview = loopView;
-            loopview.totalScrollY = loopview.totalScrollY + b;
+            loopView.totalScrollY = loopView.totalScrollY + realOffset;
             loopView.handler.sendEmptyMessage(1000);
-            a = a - b;
+            realTotalOffset = realTotalOffset - realOffset;
             return;
         }
     }

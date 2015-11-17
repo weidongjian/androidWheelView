@@ -4,7 +4,6 @@
 
 package com.weidongjian.meitu.wheelviewdemo.view;
 
-import java.util.Timer;
 import java.util.TimerTask;
 
 // Referenced classes of package com.qingchifan.view:
@@ -13,32 +12,31 @@ import java.util.TimerTask;
 final class LoopTimerTask extends TimerTask {
 
     float a;
-    final float b;
-    final Timer timer;
+    final float velocityY;
     final LoopView loopView;
 
-    LoopTimerTask(LoopView loopview, float f, Timer timer) {
+    LoopTimerTask(LoopView loopview, float velocityY) {
         super();
         loopView = loopview;
-        b = f;
-        this.timer = timer;
-        a = 2.147484E+09F;
+        this.velocityY = velocityY;
+        a = Integer.MAX_VALUE;
     }
 
+    @Override
     public final void run() {
-        if (a == 2.147484E+09F) {
-            if (Math.abs(b) > 2000F) {
-                if (b > 0.0F) {
+        if (a == Integer.MAX_VALUE) {
+            if (Math.abs(velocityY) > 2000F) {
+                if (velocityY > 0.0F) {
                     a = 2000F;
                 } else {
                     a = -2000F;
                 }
             } else {
-                a = b;
+                a = velocityY;
             }
         }
         if (Math.abs(a) >= 0.0F && Math.abs(a) <= 20F) {
-            timer.cancel();
+            loopView.cancelFuture();
             loopView.handler.sendEmptyMessage(2000);
             return;
         }
@@ -46,11 +44,12 @@ final class LoopTimerTask extends TimerTask {
         LoopView loopview = loopView;
         loopview.totalScrollY = loopview.totalScrollY - i;
         if (!loopView.isLoop) {
-            if (loopView.totalScrollY <= (int) ((float) (-loopView.positon) * (loopView.l * (float) loopView.h))) {
+            float itemHeight = loopView.lineSpacingMultiplier * loopView.maxTextHeight;
+            if (loopView.totalScrollY <= (int) ((float) (-loopView.initPosition) * itemHeight)) {
                 a = 40F;
-                loopView.totalScrollY = (int) ((float) (-loopView.positon) * (loopView.l * (float) loopView.h));
-            } else if (loopView.totalScrollY >= (int) ((float) (loopView.arrayList.size() - 1 - loopView.positon) * (loopView.l * (float) loopView.h))) {
-                loopView.totalScrollY = (int) ((float) (loopView.arrayList.size() - 1 - loopView.positon) * (loopView.l * (float) loopView.h));
+                loopView.totalScrollY = (int) ((float) (-loopView.initPosition) * itemHeight);
+            } else if (loopView.totalScrollY >= (int) ((float) (loopView.arrayList.size() - 1 - loopView.initPosition) * itemHeight)) {
+                loopView.totalScrollY = (int) ((float) (loopView.arrayList.size() - 1 - loopView.initPosition) * itemHeight);
                 a = -40F;
             }
         }

@@ -12,21 +12,22 @@ import android.os.Message;
 
 final class MessageHandler extends Handler {
 
-    final LoopView a;
+    final LoopView loopview;
 
     MessageHandler(LoopView loopview) {
         super();
-        a = loopview;
+        this.loopview = loopview;
     }
 
+    @Override
     public final void handleMessage(Message paramMessage) {
         if (paramMessage.what == 1000)
-            this.a.invalidate();
+            this.loopview.invalidate();
         while (true) {
             if (paramMessage.what == 2000)
-                LoopView.b(a);
+                LoopView.smoothScroll(loopview);
             else if (paramMessage.what == 3000)
-                this.a.c();
+                this.loopview.itemSelected();
             super.handleMessage(paramMessage);
             return;
         }

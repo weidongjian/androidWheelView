@@ -2,3 +2,58 @@
 仿照iOS的滚轮控件，从请吃饭apk反编译出来的
 
 具体的请查看这个博客：http://www.jianshu.com/p/e2b3118d8ca4
+
+![LoopView](/photo/circle.jpg)
+
+## 滚动效果类似一个圆柱 ##
+### 绘制 ###
+
+在onMeasure方法中计算控件宽和高以及初始化画笔
+
+itemHeight = lineSpacingMultiplier * maxTextHeight
+
+圆柱半圆周为itemHeight*(itemCount - 1)
+
+计算出圆柱直径即为控件高度
+
+在onTouchEvent方法中计算圆柱滚动距离totalScrollY
+
+### 在onDraw方法中绘制控件 ###
+
+计算滚动了多少个条目change = (int) ((float) totalScrollY / itemHeight);
+
+计算当前条目位置preCurrentIndex（处理超出边界的情况）
+计算滚动超出条目的位移：
+int j2 = (int) ((float) totalScrollY % itemHeight);
+
+绘制各个条目：
+
+计算条目弧度radian
+
+计算图纸canvas偏移量
+
+图中的弧度标错了，应该标它的补角，那样感觉不好理解，大家自行脑补一下
+
+h2也标错了，画图的时候忘记考虑空白区域了，h2应该是文字高度的sin值
+
+double h1 = Math.cos(radian) * (double) radius;
+
+double h2 = (Math.sin(radian) * (double) maxTextHeight) / 2D)
+
+int translateY = (int) ((double) radius h1 h2;
+
+图纸延Y方向缩放，值为弧度radian的sin值（这样出来的效果就感觉是个圆柱）
+
+### 最后分不同情况绘制各个条目 ###
+1. 偏移量translateY y值小于第一条线firstLineY y值的并且偏移量translateY+maxTextHeight大于第一条线y值小于第一条线firstLineY y值的（即第一条线穿过该条目文字）
+1. 条目文字穿过第二条线的情况
+1. 条目刚好在两条线中间的
+1. 其他情况
+
+onTouchEvent方法，当手离开控件时开始平滑滚动控件
+
+LoopViewGestureListener处理手势，当按下时取消所有的滚动，当滑行时，平滑滚动
+
+平滑滚动用定时器ScheduledExecutorService来处理
+
+哪里写的不对的希望大家指正。

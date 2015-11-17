@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         //设置原始数据
         loopView.setArrayList(list);
         //设置初始位置
-        loopView.setPosition(5);
+        loopView.setInitPosition(5);
         //设置字体大小
         loopView.setTextSize(30);
         rootview.addView(loopView, layoutParams);
