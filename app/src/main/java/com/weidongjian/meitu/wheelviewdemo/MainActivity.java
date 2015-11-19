@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.weidongjian.meitu.wheelviewdemo.view.LoopListener;
+import com.weidongjian.meitu.wheelviewdemo.view.OnItemSelectedListener;
 import com.weidongjian.meitu.wheelviewdemo.view.LoopView;
 
 import java.util.ArrayList;
@@ -26,21 +26,21 @@ public class MainActivity extends AppCompatActivity {
         rootview = (RelativeLayout) findViewById(R.id.rootview);
 
         LoopView loopView = new LoopView(this);
-        ArrayList<String> list = new ArrayList();
+        ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
             list.add("item " + i);
         }
         //设置是否循环播放
         loopView.setNotLoop();
         //滚动监听
-        loopView.setListener(new LoopListener() {
+        loopView.setListener(new OnItemSelectedListener() {
             @Override
-            public void onItemSelect(int item) {
-                Log.d("debug", "Item " + item);
+            public void onItemSelected(int index) {
+                Log.d("debug", "Item " + index);
             }
         });
         //设置原始数据
-        loopView.setArrayList(list);
+        loopView.setItems(list);
         //设置初始位置
         loopView.setInitPosition(5);
         //设置字体大小
