@@ -5,6 +5,6 @@
 package com.weidongjian.meitu.wheelviewdemo.view;
 
 
-public interface LoopListener {
-    void onItemSelect(int item);
+public interface OnItemSelectedListener {
+    void onItemSelected(int index);
 }
