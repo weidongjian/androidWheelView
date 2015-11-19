@@ -6,15 +6,14 @@ package com.weidongjian.meitu.wheelviewdemo.view;
 
 import java.util.TimerTask;
 
-final class MTimer extends TimerTask {
+final class SmoothScrollTimerTask extends TimerTask {
 
     int realTotalOffset;
     int realOffset;
     int offset;
     final LoopView loopView;
 
-    MTimer(LoopView loopview, int offset) {
-        super();
+    SmoothScrollTimerTask(LoopView loopview, int offset) {
         this.loopView = loopview;
         this.offset = offset;
         realTotalOffset = Integer.MAX_VALUE;
@@ -44,13 +43,11 @@ final class MTimer extends TimerTask {
         }
         if (Math.abs(realTotalOffset) <= 0) {
             loopView.cancelFuture();
-            loopView.handler.sendEmptyMessage(3000);
-            return;
+            loopView.handler.sendEmptyMessage(MessageHandler.WHAT_ITEM_SELECTED);
         } else {
             loopView.totalScrollY = loopView.totalScrollY + realOffset;
-            loopView.handler.sendEmptyMessage(1000);
+            loopView.handler.sendEmptyMessage(MessageHandler.WHAT_INVALIDATE_LOOP_VIEW);
             realTotalOffset = realTotalOffset - realOffset;
-            return;
         }
     }
 }

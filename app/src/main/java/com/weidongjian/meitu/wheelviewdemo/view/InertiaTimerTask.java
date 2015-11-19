@@ -9,13 +9,13 @@ import java.util.TimerTask;
 // Referenced classes of package com.qingchifan.view:
 //            LoopView
 
-final class LoopTimerTask extends TimerTask {
+final class InertiaTimerTask extends TimerTask {
 
     float a;
     final float velocityY;
     final LoopView loopView;
 
-    LoopTimerTask(LoopView loopview, float velocityY) {
+    InertiaTimerTask(LoopView loopview, float velocityY) {
         super();
         loopView = loopview;
         this.velocityY = velocityY;
@@ -37,7 +37,7 @@ final class LoopTimerTask extends TimerTask {
         }
         if (Math.abs(a) >= 0.0F && Math.abs(a) <= 20F) {
             loopView.cancelFuture();
-            loopView.handler.sendEmptyMessage(2000);
+            loopView.handler.sendEmptyMessage(MessageHandler.WHAT_SMOOTH_SCROLL);
             return;
         }
         int i = (int) ((a * 10F) / 1000F);
@@ -48,8 +48,8 @@ final class LoopTimerTask extends TimerTask {
             if (loopView.totalScrollY <= (int) ((float) (-loopView.initPosition) * itemHeight)) {
                 a = 40F;
                 loopView.totalScrollY = (int) ((float) (-loopView.initPosition) * itemHeight);
-            } else if (loopView.totalScrollY >= (int) ((float) (loopView.arrayList.size() - 1 - loopView.initPosition) * itemHeight)) {
-                loopView.totalScrollY = (int) ((float) (loopView.arrayList.size() - 1 - loopView.initPosition) * itemHeight);
+            } else if (loopView.totalScrollY >= (int) ((float) (loopView.items.size() - 1 - loopView.initPosition) * itemHeight)) {
+                loopView.totalScrollY = (int) ((float) (loopView.items.size() - 1 - loopView.initPosition) * itemHeight);
                 a = -40F;
             }
         }
@@ -58,6 +58,6 @@ final class LoopTimerTask extends TimerTask {
         } else {
             a = a - 20F;
         }
-        loopView.handler.sendEmptyMessage(1000);
+        loopView.handler.sendEmptyMessage(MessageHandler.WHAT_INVALIDATE_LOOP_VIEW);
     }
 }
