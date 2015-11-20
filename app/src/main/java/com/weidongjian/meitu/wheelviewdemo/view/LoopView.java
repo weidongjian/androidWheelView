@@ -21,6 +21,11 @@ import java.util.concurrent.TimeUnit;
  * Created by Weidongjian on 2015/8/18.
  */
 public class LoopView extends View {
+
+    public enum ACTION {
+        // 点击，滑翔(滑到尽头)，拖拽事件
+        CLICK, FLING, DAGGLE
+    }
     Context context;
 
     Handler handler;
@@ -72,6 +77,10 @@ public class LoopView extends View {
     // 半径
     int radius;
 
+    private int mOffset = 0;
+    private float previousY;
+    long startTime = 0;
+
     public LoopView(Context context) {
         super(context);
         initLoopView(context);
@@ -119,7 +128,7 @@ public class LoopView extends View {
         paintCenterText = new Paint();
         paintCenterText.setColor(colorBlack);
         paintCenterText.setAntiAlias(true);
-//        paintCenterText.setTextScaleX(1.05F);
+        paintCenterText.setTextScaleX(1.05F);
         paintCenterText.setTypeface(Typeface.MONOSPACE);
         paintCenterText.setTextSize(textSize);
 
@@ -185,11 +194,25 @@ public class LoopView extends View {
 //        timer.schedule(new SmoothScrollTimerTask(this, offset, timer), 0L, 10L);
 //    }
 
-    void smoothScroll() {
-        int offset = (int) (totalScrollY % (lineSpacingMultiplier * maxTextHeight));
+    void smoothScroll(ACTION action) {
         cancelFuture();
-        mFuture = mExecutor.scheduleWithFixedDelay(new SmoothScrollTimerTask(this, offset), 0, 10, TimeUnit.MILLISECONDS);
+        if (action==ACTION.FLING||action==ACTION.DAGGLE) {
+            float itemHeight = lineSpacingMultiplier * maxTextHeight;
+            mOffset = (int) ((totalScrollY%itemHeight + itemHeight) % itemHeight);
+            if ((float) mOffset > itemHeight / 2.0F) {
+                mOffset = (int) (itemHeight - (float) mOffset);
+            } else {
+                mOffset = -mOffset;
+            }
+        }
+        mFuture = mExecutor.scheduleWithFixedDelay(new SmoothScrollTimerTask(this, mOffset), 0, 10, TimeUnit.MILLISECONDS);
     }
+
+//    void smoothScroll() {
+//        int offset = (int) (totalScrollY % (lineSpacingMultiplier * maxTextHeight));
+//        cancelFuture();
+//        mFuture = mExecutor.scheduleWithFixedDelay(new SmoothScrollTimerTask(this, offset), 0, 10, TimeUnit.MILLISECONDS);
+//    }
 
     protected final void scrollBy(float velocityY) {
         cancelFuture();
@@ -373,13 +396,14 @@ public class LoopView extends View {
         setMeasuredDimension(measuredWidth, measuredHeight);
     }
 
-    private float previousY;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean eventConsumed = gestureDetector.onTouchEvent(event);
+        float itemHeight = lineSpacingMultiplier * maxTextHeight;
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                startTime = System.currentTimeMillis();
                 cancelFuture();
                 previousY = event.getRawY();
                 break;
@@ -392,8 +416,8 @@ public class LoopView extends View {
 
                 // 边界处理。
                 if (!isLoop) {
-                    float top = -initPosition * lineSpacingMultiplier * maxTextHeight;
-                    float bottom = (items.size() - 1 - initPosition) * (lineSpacingMultiplier * maxTextHeight);
+                    float top = -initPosition * itemHeight;
+                    float bottom = (items.size() - 1 - initPosition) * itemHeight;
 
                     if (totalScrollY < top) {
                         totalScrollY = (int) top;
@@ -406,7 +430,20 @@ public class LoopView extends View {
             case MotionEvent.ACTION_UP:
             default:
                 if (!eventConsumed) {
-                    smoothScroll();
+                    float y = event.getY();
+                    double l = Math.acos((radius - y) / radius) * radius;
+                    int circlePosition = (int) ((l + itemHeight / 2) / itemHeight);
+
+                    float extraOffset = (totalScrollY % itemHeight + itemHeight) % itemHeight;
+                    mOffset = (int) ((circlePosition - itemsVisible / 2) * itemHeight - extraOffset);
+
+                    if ((System.currentTimeMillis() - startTime) > 120) {
+                        // 处理拖拽事件
+                        smoothScroll(ACTION.DAGGLE);
+                    } else {
+                        // 处理条目点击事件
+                        smoothScroll(ACTION.CLICK);
+                    }
                 }
                 break;
         }
