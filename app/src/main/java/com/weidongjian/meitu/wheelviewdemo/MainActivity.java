@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
             list.add("item " + i);
         }
         //设置是否循环播放
-        loopView.setNotLoop();
+        //loopView.setNotLoop();
         //滚动监听
         loopView.setListener(new OnItemSelectedListener() {
             @Override

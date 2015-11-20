@@ -29,7 +29,7 @@ final class MessageHandler extends Handler {
                 break;
 
             case WHAT_SMOOTH_SCROLL:
-                loopview.smoothScroll();
+                loopview.smoothScroll(LoopView.ACTION.FLING);
                 break;
 
             case WHAT_ITEM_SELECTED:
