@@ -24,7 +24,7 @@ final class SmoothScrollTimerTask extends TimerTask {
     public final void run() {
         if (realTotalOffset == Integer.MAX_VALUE) {
             float itemHeight = loopView.lineSpacingMultiplier * loopView.maxTextHeight;
-            // ���ƫ����Ϊ����תΪ����
+            // 如果偏移量为负数，转为正数
             offset = (int)((offset + itemHeight) % itemHeight);
             if ((float) offset > itemHeight / 2.0F) {
                 realTotalOffset = (int) (itemHeight - (float) offset);
