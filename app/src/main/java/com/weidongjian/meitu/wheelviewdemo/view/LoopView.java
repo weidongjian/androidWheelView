@@ -186,13 +186,6 @@ public class LoopView extends View {
 
     }
 
-//    private void smoothScroll() {
-//        int offset = (int) ((float) totalScrollY % (lineSpacingMultiplier * (float) maxTextHeight));
-//        Timer timer = new Timer();
-//        mTimer = timer;
-//        timer.schedule(new SmoothScrollTimerTask(this, offset, timer), 0L, 10L);
-//    }
-
     void smoothScroll(ACTION action) {
         cancelFuture();
         if (action==ACTION.FLING||action==ACTION.DAGGLE) {
@@ -240,7 +233,13 @@ public class LoopView extends View {
     }
 
     public final void setInitPosition(int initPosition) {
-        this.initPosition = initPosition;
+        if (initPosition<0) {
+            this.initPosition = 0;
+        } else {
+            if (items!=null&&(items.size()-1)>initPosition) {
+                this.initPosition = initPosition;
+            }
+        }
     }
 
     public final void setListener(OnItemSelectedListener OnItemSelectedListener) {
@@ -294,10 +293,7 @@ public class LoopView extends View {
         String as[] = new String[itemsVisible];
         change = (int) (totalScrollY / (lineSpacingMultiplier * maxTextHeight));
         preCurrentIndex = initPosition + change % items.size();
-//        Log.i("test", (new StringBuilder("scrollY1=")).append(totalScrollY).toString());
-//        Log.i("test", (new StringBuilder("change=")).append(change).toString());
-//        Log.i("test", (new StringBuilder("lineSpacingMultiplier * maxTextHeight=")).append(lineSpacingMultiplier * maxTextHeight).toString());
-//        Log.i("test", (new StringBuilder("preCurrentIndex=")).append(preCurrentIndex).toString());
+
         if (!isLoop) {
             if (preCurrentIndex < 0) {
                 preCurrentIndex = 0;
@@ -320,10 +316,10 @@ public class LoopView extends View {
         while (k1 < itemsVisible) {
             int l1 = preCurrentIndex - (itemsVisible / 2 - k1);
             if (isLoop) {
-                if (l1 < 0) {
+                while (l1 < 0) {
                     l1 = l1 + items.size();
                 }
-                if (l1 > items.size() - 1) {
+                while (l1 > items.size() - 1) {
                     l1 = l1 - items.size();
                 }
                 as[k1] = items.get(l1);
