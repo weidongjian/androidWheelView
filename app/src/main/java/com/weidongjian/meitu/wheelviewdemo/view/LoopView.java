@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class LoopView extends View {
 
+    private float scaleX = 1.05F;
+
     public enum ACTION {
         // 点击，滑翔(滑到尽头)，拖拽事件
         CLICK, FLING, DAGGLE
@@ -81,6 +83,8 @@ public class LoopView extends View {
     private float previousY;
     long startTime = 0;
 
+    private Rect tempRect = new Rect();
+
     public LoopView(Context context) {
         super(context);
         initLoopView(context);
@@ -128,7 +132,7 @@ public class LoopView extends View {
         paintCenterText = new Paint();
         paintCenterText.setColor(colorBlack);
         paintCenterText.setAntiAlias(true);
-        paintCenterText.setTextScaleX(1.05F);
+        paintCenterText.setTextScaleX(scaleX);
         paintCenterText.setTypeface(Typeface.MONOSPACE);
         paintCenterText.setTextSize(textSize);
 
@@ -151,10 +155,6 @@ public class LoopView extends View {
         halfCircumference = (int) (maxTextHeight * lineSpacingMultiplier * (itemsVisible - 1));
         measuredHeight = (int) ((halfCircumference * 2) / Math.PI);
         radius = (int) (halfCircumference / Math.PI);
-        int extraRightWidth = (int) (maxTextWidth * 0.05) + 1;
-        if (paddingRight<=extraRightWidth) {
-            paddingRight = extraRightWidth;
-        }
         measuredWidth = maxTextWidth + paddingLeft + paddingRight;
         firstLineY = (int) ((measuredHeight - lineSpacingMultiplier * maxTextHeight) / 2.0F);
         secondLineY = (int) ((measuredHeight + lineSpacingMultiplier * maxTextHeight) / 2.0F);
@@ -170,16 +170,15 @@ public class LoopView extends View {
     }
 
     private void measureTextWidthHeight() {
-        Rect rect = new Rect();
         for (int i = 0; i < items.size(); i++) {
             String s1 = items.get(i);
-            paintCenterText.getTextBounds(s1, 0, s1.length(), rect);
-            int textWidth = rect.width();
+            paintCenterText.getTextBounds(s1, 0, s1.length(), tempRect);
+            int textWidth = tempRect.width();
             if (textWidth > maxTextWidth) {
-                maxTextWidth = textWidth;
+                maxTextWidth = (int) (textWidth * scaleX);
             }
-            paintCenterText.getTextBounds("\u661F\u671F", 0, 2, rect); // 星期
-            int textHeight = rect.height();
+            paintCenterText.getTextBounds("\u661F\u671F", 0, 2, tempRect); // 星期
+            int textHeight = tempRect.height();
             if (textHeight > maxTextHeight) {
                 maxTextHeight = textHeight;
             }
@@ -217,7 +216,7 @@ public class LoopView extends View {
     protected final void scrollBy(float velocityY) {
         cancelFuture();
         // 修改这个值可以改变滑行速度
-        int velocityFling = 20;
+        int velocityFling = 10;
         mFuture = mExecutor.scheduleWithFixedDelay(new InertiaTimerTask(this, velocityY), 0, velocityFling, TimeUnit.MILLISECONDS);
     }
 
@@ -264,6 +263,7 @@ public class LoopView extends View {
         return paddingRight;
     }
 
+    // 设置左右内边距
     public void setViewPadding(int left, int top, int right, int bottom) {
         paddingLeft = left;
         paddingRight = right;
@@ -336,9 +336,9 @@ public class LoopView extends View {
             }
             k1++;
         }
-        int m1 = paddingLeft;
         canvas.drawLine(0.0F, firstLineY, measuredWidth, firstLineY, paintIndicator);
         canvas.drawLine(0.0F, secondLineY, measuredWidth, secondLineY, paintIndicator);
+
         int j1 = 0;
         while (j1 < itemsVisible) {
             canvas.save();
@@ -358,36 +358,46 @@ public class LoopView extends View {
                     // 条目经过第一条线
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, firstLineY - translateY);
-                    canvas.drawText(as[j1], m1, maxTextHeight, paintOuterText);
+                    canvas.drawText(as[j1], getTextX(as[j1], paintOuterText, tempRect), maxTextHeight, paintOuterText);
                     canvas.restore();
                     canvas.save();
                     canvas.clipRect(0, firstLineY - translateY, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(as[j1], m1, maxTextHeight, paintCenterText);
+                    canvas.drawText(as[j1], getTextX(as[j1], paintCenterText, tempRect), maxTextHeight, paintCenterText);
                     canvas.restore();
                 } else if (translateY <= secondLineY && maxTextHeight + translateY >= secondLineY) {
                     // 条目经过第二条线
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, secondLineY - translateY);
-                    canvas.drawText(as[j1], m1, maxTextHeight, paintCenterText);
+                    canvas.drawText(as[j1], getTextX(as[j1], paintCenterText, tempRect), maxTextHeight, paintCenterText);
                     canvas.restore();
                     canvas.save();
                     canvas.clipRect(0, secondLineY - translateY, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(as[j1], m1, maxTextHeight, paintOuterText);
+                    canvas.drawText(as[j1], getTextX(as[j1], paintOuterText, tempRect), maxTextHeight, paintOuterText);
                     canvas.restore();
                 } else if (translateY >= firstLineY && maxTextHeight + translateY <= secondLineY) {
                     // 中间条目
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(as[j1], m1, maxTextHeight, paintCenterText);
+                    canvas.drawText(as[j1], getTextX(as[j1], paintCenterText, tempRect), maxTextHeight, paintCenterText);
                     selectedItem = items.indexOf(as[j1]);
                 } else {
                     // 其他条目
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(as[j1], m1, maxTextHeight, paintOuterText);
+                    canvas.drawText(as[j1], getTextX(as[j1], paintOuterText, tempRect), maxTextHeight, paintOuterText);
                 }
                 canvas.restore();
             }
             j1++;
         }
+    }
+
+    // 绘制文字起始位置
+    private int getTextX(String a, Paint paint, Rect rect) {
+        paint.getTextBounds(a, 0, a.length(), rect);
+        // 获取到的是实际文字宽度
+        int textWidth = rect.width();
+        // 转换成绘制文字宽度
+        textWidth *= scaleX;
+        return (measuredWidth - textWidth) / 2;
     }
 
     @Override
