@@ -5,3 +5,9 @@
 .DS_Store
 /build
 /captures
+androidWheelView.iml
+.idea/.name
+.idea/gradle.xml
+.idea/misc.xml
+.idea/modules.xml
+app/app.iml
