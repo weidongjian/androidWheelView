@@ -284,6 +284,17 @@ public class LoopView extends View {
         }
     }
 
+
+    /**
+     * 设置中间文字的scaleX的值，如果为1.0，则没有错位效果,
+     * link https://github.com/weidongjian/androidWheelView/issues/10
+     * @param scaleX
+     */
+    public void setScaleX(float scaleX) {
+        this.scaleX = scaleX;
+    }
+
+
     @Override
     protected void onDraw(Canvas canvas) {
         if (items == null) {
