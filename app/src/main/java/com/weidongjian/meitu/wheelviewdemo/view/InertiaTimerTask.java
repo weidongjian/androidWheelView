@@ -4,12 +4,10 @@
 
 package com.weidongjian.meitu.wheelviewdemo.view;
 
-import java.util.TimerTask;
-
 // Referenced classes of package com.qingchifan.view:
 //            LoopView
 
-final class InertiaTimerTask extends TimerTask {
+final class InertiaTimerTask implements Runnable {
 
     float a;
     final float velocityY;

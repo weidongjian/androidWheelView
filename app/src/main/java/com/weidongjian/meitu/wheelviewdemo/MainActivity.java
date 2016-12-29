@@ -3,29 +3,20 @@ package com.weidongjian.meitu.wheelviewdemo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
-import com.weidongjian.meitu.wheelviewdemo.view.OnItemSelectedListener;
 import com.weidongjian.meitu.wheelviewdemo.view.LoopView;
+import com.weidongjian.meitu.wheelviewdemo.view.OnItemSelectedListener;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private RelativeLayout rootview;
-    private RelativeLayout.LayoutParams layoutParams;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+        LoopView loopView = (LoopView) findViewById(R.id.loopView);
 
-        rootview = (RelativeLayout) findViewById(R.id.rootview);
-
-        LoopView loopView = new LoopView(this);
         ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
             list.add("item " + i);
@@ -42,11 +33,8 @@ public class MainActivity extends AppCompatActivity {
         //设置原始数据
         loopView.setItems(list);
         //设置初始位置
-        loopView.setInitPosition(5);
         //设置字体大小
-        loopView.setTextSize(30);
-        rootview.addView(loopView, layoutParams);
-
+        loopView.setTextSize(20);
     }
 
 }

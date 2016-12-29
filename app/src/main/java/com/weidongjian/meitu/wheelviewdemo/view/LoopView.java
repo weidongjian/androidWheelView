@@ -29,19 +29,19 @@ public class LoopView extends View {
         CLICK, FLING, DAGGLE
     }
 
-    Context context;
+    private Context context;
 
     Handler handler;
-    private GestureDetector gestureDetector;
+    private GestureDetector flingGestureDetector;
     OnItemSelectedListener onItemSelectedListener;
 
     // Timer mTimer;
     ScheduledExecutorService mExecutor = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> mFuture;
 
-    Paint paintOuterText;
-    Paint paintCenterText;
-    Paint paintIndicator;
+    private Paint paintOuterText;
+    private Paint paintCenterText;
+    private Paint paintIndicator;
 
     List<String> items;
 
@@ -55,6 +55,7 @@ public class LoopView extends View {
 
     // 条目间距倍数
     float lineSpacingMultiplier;
+    //是否循环滚轮
     boolean isLoop;
 
     // 第一条线Y坐标值
@@ -104,13 +105,13 @@ public class LoopView extends View {
     private void initLoopView(Context context) {
         this.context = context;
         handler = new MessageHandler(this);
-        gestureDetector = new GestureDetector(context, new LoopViewGestureListener(this));
-        gestureDetector.setIsLongpressEnabled(false);
+        flingGestureDetector = new GestureDetector(context, new LoopViewGestureListener(this));
+        flingGestureDetector.setIsLongpressEnabled(false);
 
         lineSpacingMultiplier = 2.0F;
         isLoop = true;
         itemsVisible = 9;
-        textSize = 0;
+        textSize = 30;
         colorGray = 0xffafafaf;
         colorBlack = 0xff313131;
         colorLightGray = 0xffc5c5c5;
@@ -120,7 +121,7 @@ public class LoopView extends View {
 
         initPaints();
 
-        setTextSize(16F);
+//        setTextSize(20F);
     }
 
     private void initPaints() {
@@ -151,12 +152,19 @@ public class LoopView extends View {
             return;
         }
 
-        measureTextWidthHeight();
+        measureTextWidthAndHeight();
+        measuredWidth = getMeasuredWidth();
 
-        halfCircumference = (int) (maxTextHeight * lineSpacingMultiplier * (itemsVisible - 1));
-        measuredHeight = (int) ((halfCircumference * 2) / Math.PI);
-        radius = (int) (halfCircumference / Math.PI);
-        measuredWidth = maxTextWidth + paddingLeft + paddingRight;
+        measuredHeight = getMeasuredHeight();
+
+        halfCircumference = (int) (measuredHeight * Math.PI / 2);
+
+        maxTextHeight = (int) (halfCircumference / (lineSpacingMultiplier * (itemsVisible - 1)));
+
+//        halfCircumference = (int) (maxTextHeight * lineSpacingMultiplier * (itemsVisible - 1));
+//        measuredHeight = (int) ((halfCircumference * 2) / Math.PI);
+        radius = measuredHeight / 2;// TODO: 2016/12/23
+//        measuredWidth = maxTextWidth + paddingLeft + paddingRight;
         firstLineY = (int) ((measuredHeight - lineSpacingMultiplier * maxTextHeight) / 2.0F);
         secondLineY = (int) ((measuredHeight + lineSpacingMultiplier * maxTextHeight) / 2.0F);
         if (initPosition == -1) {
@@ -170,7 +178,8 @@ public class LoopView extends View {
         preCurrentIndex = initPosition;
     }
 
-    private void measureTextWidthHeight() {
+
+    private void measureTextWidthAndHeight() {
         for (int i = 0; i < items.size(); i++) {
             String s1 = items.get(i);
             paintCenterText.getTextBounds(s1, 0, s1.length(), tempRect);
@@ -178,11 +187,11 @@ public class LoopView extends View {
             if (textWidth > maxTextWidth) {
                 maxTextWidth = (int) (textWidth * scaleX);
             }
-            paintCenterText.getTextBounds("\u661F\u671F", 0, 2, tempRect); // 星期
-            int textHeight = tempRect.height();
-            if (textHeight > maxTextHeight) {
-                maxTextHeight = textHeight;
-            }
+        }
+        paintCenterText.getTextBounds("\u661F\u671F", 0, 2, tempRect); // 星期
+        int textHeight = tempRect.height();
+        if (textHeight > maxTextHeight) {
+            maxTextHeight = textHeight;
         }
 
     }
@@ -409,15 +418,21 @@ public class LoopView extends View {
         return (measuredWidth - textWidth) / 2;
     }
 
-    @Override
+    /*@Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         remeasure();
         setMeasuredDimension(measuredWidth, measuredHeight);
+    }*/
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        remeasure();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        boolean eventConsumed = gestureDetector.onTouchEvent(event);
+        boolean eventConsumed = flingGestureDetector.onTouchEvent(event);
         float itemHeight = lineSpacingMultiplier * maxTextHeight;
 
         switch (event.getAction()) {
