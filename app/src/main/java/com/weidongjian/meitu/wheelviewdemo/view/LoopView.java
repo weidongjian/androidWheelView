@@ -1,6 +1,7 @@
 package com.weidongjian.meitu.wheelviewdemo.view;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -23,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 public class LoopView extends View {
 
     private float scaleX = 1.05F;
+
+    private static final int DEFAULT_TEXT_SIZE = (int) (Resources.getSystem().getDisplayMetrics().density * 15);
 
     public enum ACTION {
         // 点击，滑翔(滑到尽头)，拖拽事件
@@ -72,8 +75,6 @@ public class LoopView extends View {
 
     int measuredHeight;
     int measuredWidth;
-    int paddingLeft = 0;
-    int paddingRight = 0;
 
     // 半圆周长
     int halfCircumference;
@@ -85,6 +86,8 @@ public class LoopView extends View {
     long startTime = 0;
 
     private Rect tempRect = new Rect();
+
+    private int paddingLeft, paddingRight;
 
     public LoopView(Context context) {
         super(context);
@@ -110,7 +113,7 @@ public class LoopView extends View {
         lineSpacingMultiplier = 2.0F;
         isLoop = true;
         itemsVisible = 9;
-        textSize = 30;
+        textSize = DEFAULT_TEXT_SIZE;
         colorGray = 0xffafafaf;
         colorBlack = 0xff313131;
         colorLightGray = 0xffc5c5c5;
@@ -119,7 +122,6 @@ public class LoopView extends View {
         initPosition = -1;
 
         initPaints();
-
     }
 
     private void initPaints() {
@@ -154,6 +156,11 @@ public class LoopView extends View {
         if (measuredWidth == 0 || measuredHeight == 0) {
             return;
         }
+
+        paddingLeft = getPaddingLeft();
+        paddingRight = getPaddingRight();
+
+        measuredWidth = measuredWidth - paddingRight;
 
         paintCenterText.getTextBounds("\u661F\u671F", 0, 2, tempRect); // 星期
         maxTextHeight = tempRect.height();
@@ -241,22 +248,6 @@ public class LoopView extends View {
         invalidate();
     }
 
-    @Override
-    public int getPaddingLeft() {
-        return paddingLeft;
-    }
-
-    @Override
-    public int getPaddingRight() {
-        return paddingRight;
-    }
-
-    // 设置左右内边距
-    public void setViewPadding(int left, int top, int right, int bottom) {
-        paddingLeft = left;
-        paddingRight = right;
-    }
-
     public final int getSelectedItem() {
         return selectedItem;
     }
@@ -333,8 +324,8 @@ public class LoopView extends View {
             }
             k1++;
         }
-        canvas.drawLine(0.0F, firstLineY, measuredWidth, firstLineY, paintIndicator);
-        canvas.drawLine(0.0F, secondLineY, measuredWidth, secondLineY, paintIndicator);
+        canvas.drawLine(paddingLeft, firstLineY, measuredWidth, firstLineY, paintIndicator);
+        canvas.drawLine(paddingLeft, secondLineY, measuredWidth, secondLineY, paintIndicator);
 
         int j1 = 0;
         while (j1 < itemsVisible) {
@@ -394,7 +385,7 @@ public class LoopView extends View {
         int textWidth = rect.width();
         // 转换成绘制文字宽度
         textWidth *= scaleX;
-        return (measuredWidth - textWidth) / 2;
+        return (measuredWidth - paddingLeft - textWidth) / 2 + paddingLeft;
     }
 
 
