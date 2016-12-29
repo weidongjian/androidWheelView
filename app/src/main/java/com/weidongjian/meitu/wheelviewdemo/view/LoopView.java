@@ -46,7 +46,6 @@ public class LoopView extends View {
     List<String> items;
 
     int textSize;
-    int maxTextWidth;
     int maxTextHeight;
 
     int colorGray;
@@ -121,7 +120,6 @@ public class LoopView extends View {
 
         initPaints();
 
-//        setTextSize(20F);
     }
 
     private void initPaints() {
@@ -142,9 +140,6 @@ public class LoopView extends View {
         paintIndicator.setColor(colorLightGray);
         paintIndicator.setAntiAlias(true);
 
-        if (android.os.Build.VERSION.SDK_INT >= 11) {
-            setLayerType(LAYER_TYPE_SOFTWARE, null);
-        }
     }
 
     private void remeasure() {
@@ -152,19 +147,21 @@ public class LoopView extends View {
             return;
         }
 
-        measureTextWidthAndHeight();
         measuredWidth = getMeasuredWidth();
 
         measuredHeight = getMeasuredHeight();
 
+        if (measuredWidth == 0 || measuredHeight == 0) {
+            return;
+        }
+
+        paintCenterText.getTextBounds("\u661F\u671F", 0, 2, tempRect); // 星期
+        maxTextHeight = tempRect.height();
         halfCircumference = (int) (measuredHeight * Math.PI / 2);
 
         maxTextHeight = (int) (halfCircumference / (lineSpacingMultiplier * (itemsVisible - 1)));
 
-//        halfCircumference = (int) (maxTextHeight * lineSpacingMultiplier * (itemsVisible - 1));
-//        measuredHeight = (int) ((halfCircumference * 2) / Math.PI);
-        radius = measuredHeight / 2;// TODO: 2016/12/23
-//        measuredWidth = maxTextWidth + paddingLeft + paddingRight;
+        radius = measuredHeight / 2;
         firstLineY = (int) ((measuredHeight - lineSpacingMultiplier * maxTextHeight) / 2.0F);
         secondLineY = (int) ((measuredHeight + lineSpacingMultiplier * maxTextHeight) / 2.0F);
         if (initPosition == -1) {
@@ -176,24 +173,6 @@ public class LoopView extends View {
         }
 
         preCurrentIndex = initPosition;
-    }
-
-
-    private void measureTextWidthAndHeight() {
-        for (int i = 0; i < items.size(); i++) {
-            String s1 = items.get(i);
-            paintCenterText.getTextBounds(s1, 0, s1.length(), tempRect);
-            int textWidth = tempRect.width();
-            if (textWidth > maxTextWidth) {
-                maxTextWidth = (int) (textWidth * scaleX);
-            }
-        }
-        paintCenterText.getTextBounds("\u661F\u671F", 0, 2, tempRect); // 星期
-        int textHeight = tempRect.height();
-        if (textHeight > maxTextHeight) {
-            maxTextHeight = textHeight;
-        }
-
     }
 
     void smoothScroll(ACTION action) {
@@ -418,11 +397,6 @@ public class LoopView extends View {
         return (measuredWidth - textWidth) / 2;
     }
 
-    /*@Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        remeasure();
-        setMeasuredDimension(measuredWidth, measuredHeight);
-    }*/
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
