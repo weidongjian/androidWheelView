@@ -3,6 +3,10 @@
 
 具体的请查看这个博客：http://www.jianshu.com/p/e2b3118d8ca4
 
+效果图如下：
+
+![DemoView](/photo/Gif_20161230_162613.gif)
+
 ## 2016-12-30：各种性能效果做了很大的更新
 同时，提供各种参数接口，包括文本大小，显示数量，控件颜色等各种参数
 #### Description of Attributes
