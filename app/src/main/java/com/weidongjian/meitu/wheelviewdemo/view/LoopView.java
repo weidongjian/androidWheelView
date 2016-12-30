@@ -73,6 +73,8 @@ public class LoopView extends View {
     // 显示几个条目
     int itemsVisible;
 
+    String[] as;
+
     int measuredHeight;
     int measuredWidth;
 
@@ -113,6 +115,8 @@ public class LoopView extends View {
         lineSpacingMultiplier = 2.0F;
         isLoop = true;
         itemsVisible = 9;
+        as = new String[itemsVisible];
+
         textSize = DEFAULT_TEXT_SIZE;
         colorGray = 0xffafafaf;
         colorBlack = 0xff313131;
@@ -282,7 +286,7 @@ public class LoopView extends View {
             return;
         }
 
-        String as[] = new String[itemsVisible];
+
         change = (int) (totalScrollY / (lineSpacingMultiplier * maxTextHeight));
         preCurrentIndex = initPosition + change % items.size();
 
