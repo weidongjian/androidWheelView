@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LoopView loopView = (LoopView) findViewById(R.id.loopView);
+        final LoopView loopView = (LoopView) findViewById(R.id.loopView);
 
         ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < 15; i++) {

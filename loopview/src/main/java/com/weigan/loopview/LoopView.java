@@ -350,6 +350,20 @@ public class LoopView extends View {
     }
 
 
+    /**
+     * 设置当前item的位置
+     * @param position
+     */
+    public void setCurrentPosition(int position) {
+        if (position > 0 && position < items.size() && position != selectedItem) {
+            initPosition = position;
+            totalScrollY = 0;
+            mOffset = 0;
+            invalidate();
+        }
+    }
+
+
     @Override
     protected void onDraw(Canvas canvas) {
         if (items == null) {
