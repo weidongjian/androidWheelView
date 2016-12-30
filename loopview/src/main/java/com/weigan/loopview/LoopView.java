@@ -33,7 +33,6 @@ public class LoopView extends View {
     private static final int DEFAULT_VISIBIE_ITEMS = 9;
 
     public enum ACTION {
-        // 点击，滑翔(滑到尽头)，拖拽事件
         CLICK, FLING, DAGGLE
     }
 
@@ -61,12 +60,9 @@ public class LoopView extends View {
     int centerTextColor;
     int dividerColor;
 
-    // 条目间距倍数
     float lineSpacingMultiplier;
-    //是否循环滚轮
     boolean isLoop;
 
-    // 第一条线Y坐标值
     int firstLineY;
     int secondLineY;
 
@@ -76,7 +72,6 @@ public class LoopView extends View {
     int preCurrentIndex;
     int change;
 
-    // 显示几个条目
     int itemsVisibleCount;
 
     String[] drawingStrings;
@@ -84,9 +79,7 @@ public class LoopView extends View {
     int measuredHeight;
     int measuredWidth;
 
-    // 半圆周长
     int halfCircumference;
-    // 半径
     int radius;
 
     private int mOffset = 0;
@@ -182,7 +175,7 @@ public class LoopView extends View {
 
 
     /**
-     * 设置可见的items数量，必须是奇数
+     * visible item count, must be odd number
      *
      * @param visibleNumber
      */
@@ -271,7 +264,7 @@ public class LoopView extends View {
 
     protected final void scrollBy(float velocityY) {
         cancelFuture();
-        // 修改这个值可以改变滑行速度
+        // change this number, can change fling speed
         int velocityFling = 10;
         mFuture = mExecutor.scheduleWithFixedDelay(new InertiaTimerTask(this, velocityY), 0, velocityFling, TimeUnit.MILLISECONDS);
     }
@@ -284,7 +277,7 @@ public class LoopView extends View {
     }
 
     /**
-     * 设置不要循环模块，默认是循环模式
+     * set not loop
      */
     public void setNotLoop() {
         isLoop = false;
@@ -340,7 +333,6 @@ public class LoopView extends View {
 
 
     /**
-     * 设置中间文字的scaleX的值，如果为1.0，则没有错位效果,
      * link https://github.com/weidongjian/androidWheelView/issues/10
      *
      * @param scaleX
@@ -351,7 +343,7 @@ public class LoopView extends View {
 
 
     /**
-     * 设置当前item的位置
+     * set current item position
      * @param position
      */
     public void setCurrentPosition(int position) {
@@ -391,7 +383,7 @@ public class LoopView extends View {
         }
 
         int j2 = (int) (totalScrollY % (lineSpacingMultiplier * maxTextHeight));
-        // 设置as数组中每个元素的值
+        // put value to drawingString
         int k1 = 0;
         while (k1 < itemsVisibleCount) {
             int l1 = preCurrentIndex - (itemsVisibleCount / 2 - k1);
@@ -418,11 +410,8 @@ public class LoopView extends View {
         int i = 0;
         while (i < itemsVisibleCount) {
             canvas.save();
-            // L(弧长)=α（弧度）* r(半径) （弧度制）
-            // 求弧度--> (L * π ) / (π * r)   (弧长X派/半圆周长)
             float itemHeight = maxTextHeight * lineSpacingMultiplier;
             double radian = ((itemHeight * i - j2) * Math.PI) / halfCircumference;
-            // 弧度转换成角度(把半圆以Y轴为轴心向右转90度，使其处于第一象限及第四象限
             if (radian >= Math.PI || radian <= 0) {
                 canvas.restore();
             } else {
@@ -430,7 +419,7 @@ public class LoopView extends View {
                 canvas.translate(0.0F, translateY);
                 canvas.scale(1.0F, (float) Math.sin(radian));
                 if (translateY <= firstLineY && maxTextHeight + translateY >= firstLineY) {
-                    // 条目经过第一条线
+                    // first divider
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, firstLineY - translateY);
                     canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect), maxTextHeight, paintOuterText);
@@ -440,7 +429,7 @@ public class LoopView extends View {
                     canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect), maxTextHeight, paintCenterText);
                     canvas.restore();
                 } else if (translateY <= secondLineY && maxTextHeight + translateY >= secondLineY) {
-                    // 条目经过第二条线
+                    // second divider
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, secondLineY - translateY);
                     canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect), maxTextHeight, paintCenterText);
@@ -450,12 +439,12 @@ public class LoopView extends View {
                     canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect), maxTextHeight, paintOuterText);
                     canvas.restore();
                 } else if (translateY >= firstLineY && maxTextHeight + translateY <= secondLineY) {
-                    // 中间条目
+                    // center item
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
                     canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect), maxTextHeight, paintCenterText);
                     selectedItem = items.indexOf(drawingStrings[i]);
                 } else {
-                    // 其他条目
+                    // other item
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
                     canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect), maxTextHeight, paintOuterText);
                 }
@@ -465,12 +454,10 @@ public class LoopView extends View {
         }
     }
 
-    // 绘制文字起始位置
+    // text start drawing position
     private int getTextX(String a, Paint paint, Rect rect) {
         paint.getTextBounds(a, 0, a.length(), rect);
-        // 获取到的是实际文字宽度
         int textWidth = rect.width();
-        // 转换成绘制文字宽度
         textWidth *= scaleX;
         return (measuredWidth - paddingLeft - textWidth) / 2 + paddingLeft;
     }
@@ -500,7 +487,6 @@ public class LoopView extends View {
 
                 totalScrollY = (int) (totalScrollY + dy);
 
-                // 边界处理。
                 if (!isLoop) {
                     float top = -initPosition * itemHeight;
                     float bottom = (items.size() - 1 - initPosition) * itemHeight;
@@ -524,10 +510,8 @@ public class LoopView extends View {
                     mOffset = (int) ((circlePosition - itemsVisibleCount / 2) * itemHeight - extraOffset);
 
                     if ((System.currentTimeMillis() - startTime) > 120) {
-                        // 处理拖拽事件
                         smoothScroll(ACTION.DAGGLE);
                     } else {
-                        // 处理条目点击事件
                         smoothScroll(ACTION.CLICK);
                     }
                 }
