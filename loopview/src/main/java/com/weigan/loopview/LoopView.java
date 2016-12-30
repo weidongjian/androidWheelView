@@ -1,7 +1,8 @@
-package com.weidongjian.meitu.wheelviewdemo.view;
+package com.weigan.loopview;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -57,6 +58,45 @@ public class LoopView extends View {
 
     int outerTextColor;
 
+    int centerTextColor;
+    int dividerColor;
+
+    // 条目间距倍数
+    float lineSpacingMultiplier;
+    //是否循环滚轮
+    boolean isLoop;
+
+    // 第一条线Y坐标值
+    int firstLineY;
+    int secondLineY;
+
+    int totalScrollY;
+    int initPosition;
+    private int selectedItem;
+    int preCurrentIndex;
+    int change;
+
+    // 显示几个条目
+    int itemsVisibleCount;
+
+    String[] drawingStrings;
+
+    int measuredHeight;
+    int measuredWidth;
+
+    // 半圆周长
+    int halfCircumference;
+    // 半径
+    int radius;
+
+    private int mOffset = 0;
+    private float previousY;
+    long startTime = 0;
+
+    private Rect tempRect = new Rect();
+
+    private int paddingLeft, paddingRight;
+
     /**
      * set text line space, must more than 1
      * @param lineSpacingMultiplier
@@ -95,75 +135,44 @@ public class LoopView extends View {
         paintIndicator.setColor(dividerColor);
     }
 
-    int centerTextColor;
-    int dividerColor;
 
-    // 条目间距倍数
-    float lineSpacingMultiplier;
-    //是否循环滚轮
-    boolean isLoop;
-
-    // 第一条线Y坐标值
-    int firstLineY;
-    int secondLineY;
-
-    int totalScrollY;
-    int initPosition;
-    private int selectedItem;
-    int preCurrentIndex;
-    int change;
-
-    // 显示几个条目
-    int itemsVisible;
-
-    String[] drawingStrings;
-
-    int measuredHeight;
-    int measuredWidth;
-
-    // 半圆周长
-    int halfCircumference;
-    // 半径
-    int radius;
-
-    private int mOffset = 0;
-    private float previousY;
-    long startTime = 0;
-
-    private Rect tempRect = new Rect();
-
-    private int paddingLeft, paddingRight;
 
     public LoopView(Context context) {
         super(context);
-        initLoopView(context);
+        initLoopView(context, null);
     }
 
     public LoopView(Context context, AttributeSet attributeset) {
         super(context, attributeset);
-        initLoopView(context);
+        initLoopView(context, attributeset);
     }
 
     public LoopView(Context context, AttributeSet attributeset, int defStyleAttr) {
         super(context, attributeset, defStyleAttr);
-        initLoopView(context);
+        initLoopView(context, attributeset);
     }
 
-    private void initLoopView(Context context) {
+    private void initLoopView(Context context, AttributeSet attributeset) {
         this.context = context;
         handler = new MessageHandler(this);
         flingGestureDetector = new GestureDetector(context, new LoopViewGestureListener(this));
         flingGestureDetector.setIsLongpressEnabled(false);
 
-        lineSpacingMultiplier = DEFAULT_LINE_SPACE;
-        isLoop = true;
-        itemsVisible = DEFAULT_VISIBIE_ITEMS;
-        drawingStrings = new String[itemsVisible];
+        TypedArray typedArray = context.obtainStyledAttributes(attributeset, R.styleable.androidWheelView);
+        textSize = typedArray.getInteger(R.styleable.androidWheelView_awv_textsize, DEFAULT_TEXT_SIZE);
+        textSize = (int) (Resources.getSystem().getDisplayMetrics().density * textSize);
+        lineSpacingMultiplier = typedArray.getFloat(R.styleable.androidWheelView_awv_lineSpace, DEFAULT_LINE_SPACE);
+        centerTextColor = typedArray.getInteger(R.styleable.androidWheelView_awv_centerTextColor, 0xff313131);
+        outerTextColor = typedArray.getInteger(R.styleable.androidWheelView_awv_outerTextColor, 0xffafafaf);
+        dividerColor = typedArray.getInteger(R.styleable.androidWheelView_awv_dividerTextColor, 0xffc5c5c5);
+        itemsVisibleCount = typedArray.getInteger(R.styleable.androidWheelView_awv_itemsVisibleCount, DEFAULT_VISIBIE_ITEMS);
+        if (itemsVisibleCount % 2 == 0) {
+            itemsVisibleCount = DEFAULT_VISIBIE_ITEMS;
+        }
+        isLoop = typedArray.getBoolean(R.styleable.androidWheelView_awv_isLoop, true);
+        typedArray.recycle();
 
-        textSize = DEFAULT_TEXT_SIZE;
-        outerTextColor = 0xffafafaf;
-        centerTextColor = 0xff313131;
-        dividerColor = 0xffc5c5c5;
+        drawingStrings = new String[itemsVisibleCount];
 
         totalScrollY = 0;
         initPosition = -1;
@@ -177,13 +186,13 @@ public class LoopView extends View {
      *
      * @param visibleNumber
      */
-    public void setItemsVisible(int visibleNumber) {
+    public void setItemsVisibleCount(int visibleNumber) {
         if (visibleNumber % 2 == 0) {
             return;
         }
-        if (visibleNumber != itemsVisible) {
-            itemsVisible = visibleNumber;
-            drawingStrings = new String[itemsVisible];
+        if (visibleNumber != itemsVisibleCount) {
+            itemsVisibleCount = visibleNumber;
+            drawingStrings = new String[itemsVisibleCount];
         }
     }
 
@@ -230,7 +239,7 @@ public class LoopView extends View {
         maxTextHeight = tempRect.height();
         halfCircumference = (int) (measuredHeight * Math.PI / 2);
 
-        maxTextHeight = (int) (halfCircumference / (lineSpacingMultiplier * (itemsVisible - 1)));
+        maxTextHeight = (int) (halfCircumference / (lineSpacingMultiplier * (itemsVisibleCount - 1)));
 
         radius = measuredHeight / 2;
         firstLineY = (int) ((measuredHeight - lineSpacingMultiplier * maxTextHeight) / 2.0F);
@@ -259,12 +268,6 @@ public class LoopView extends View {
         }
         mFuture = mExecutor.scheduleWithFixedDelay(new SmoothScrollTimerTask(this, mOffset), 0, 10, TimeUnit.MILLISECONDS);
     }
-
-//    void smoothScroll() {
-//        int offset = (int) (totalScrollY % (lineSpacingMultiplier * maxTextHeight));
-//        cancelFuture();
-//        mFuture = mExecutor.scheduleWithFixedDelay(new SmoothScrollTimerTask(this, offset), 0, 10, TimeUnit.MILLISECONDS);
-//    }
 
     protected final void scrollBy(float velocityY) {
         cancelFuture();
@@ -376,8 +379,8 @@ public class LoopView extends View {
         int j2 = (int) (totalScrollY % (lineSpacingMultiplier * maxTextHeight));
         // 设置as数组中每个元素的值
         int k1 = 0;
-        while (k1 < itemsVisible) {
-            int l1 = preCurrentIndex - (itemsVisible / 2 - k1);
+        while (k1 < itemsVisibleCount) {
+            int l1 = preCurrentIndex - (itemsVisibleCount / 2 - k1);
             if (isLoop) {
                 while (l1 < 0) {
                     l1 = l1 + items.size();
@@ -399,7 +402,7 @@ public class LoopView extends View {
         canvas.drawLine(paddingLeft, secondLineY, measuredWidth, secondLineY, paintIndicator);
 
         int i = 0;
-        while (i < itemsVisible) {
+        while (i < itemsVisibleCount) {
             canvas.save();
             // L(弧长)=α（弧度）* r(半径) （弧度制）
             // 求弧度--> (L * π ) / (π * r)   (弧长X派/半圆周长)
@@ -504,7 +507,7 @@ public class LoopView extends View {
                     int circlePosition = (int) ((l + itemHeight / 2) / itemHeight);
 
                     float extraOffset = (totalScrollY % itemHeight + itemHeight) % itemHeight;
-                    mOffset = (int) ((circlePosition - itemsVisible / 2) * itemHeight - extraOffset);
+                    mOffset = (int) ((circlePosition - itemsVisibleCount / 2) * itemHeight - extraOffset);
 
                     if ((System.currentTimeMillis() - startTime) > 120) {
                         // 处理拖拽事件

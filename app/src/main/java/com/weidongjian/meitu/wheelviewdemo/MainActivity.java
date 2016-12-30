@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.weidongjian.meitu.wheelviewdemo.view.LoopView;
-import com.weidongjian.meitu.wheelviewdemo.view.OnItemSelectedListener;
+import com.weigan.loopview.LoopView;
+import com.weigan.loopview.OnItemSelectedListener;
 
 import java.util.ArrayList;
 
@@ -39,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
         });
         //设置原始数据
         loopView.setItems(list);
-        //设置初始位置
-        //设置字体大小
-        loopView.setTextSize(20);
     }
 
 }

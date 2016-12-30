@@ -2,7 +2,7 @@
 // Jad home page: http://www.geocities.com/kpdus/jad.html
 // Decompiler options: braces fieldsfirst space lnc 
 
-package com.weidongjian.meitu.wheelviewdemo.view;
+package com.weigan.loopview;
 
 // Referenced classes of package com.qingchifan.view:
 //            LoopView, OnItemSelectedListener

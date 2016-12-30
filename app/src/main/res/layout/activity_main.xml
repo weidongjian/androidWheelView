@@ -1,16 +1,17 @@
 <LinearLayout
     android:id="@+id/rootview"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.weidongjian.meitu.wheelviewdemo.view.LoopView
+    <com.weigan.loopview.LoopView
         android:id="@+id/loopView"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-    />
-
+        app:awv_textsize="18"
+        />
 
 </LinearLayout>

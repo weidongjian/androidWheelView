@@ -1,11 +1,10 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
 
     defaultConfig {
-        applicationId "com.weidongjian.meitu.wheelviewdemo"
         minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
@@ -20,7 +19,5 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':loopview')
-    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
