@@ -73,7 +73,7 @@ public class LoopView extends View {
     // 显示几个条目
     int itemsVisible;
 
-    String[] as;
+    String[] drawingStrings;
 
     int measuredHeight;
     int measuredWidth;
@@ -115,7 +115,7 @@ public class LoopView extends View {
         lineSpacingMultiplier = 2.0F;
         isLoop = true;
         itemsVisible = 9;
-        as = new String[itemsVisible];
+        drawingStrings = new String[itemsVisible];
 
         textSize = DEFAULT_TEXT_SIZE;
         colorGray = 0xffafafaf;
@@ -318,29 +318,28 @@ public class LoopView extends View {
                 while (l1 > items.size() - 1) {
                     l1 = l1 - items.size();
                 }
-                as[k1] = items.get(l1);
+                drawingStrings[k1] = items.get(l1);
             } else if (l1 < 0) {
-                as[k1] = "";
+                drawingStrings[k1] = "";
             } else if (l1 > items.size() - 1) {
-                as[k1] = "";
+                drawingStrings[k1] = "";
             } else {
-                as[k1] = items.get(l1);
+                drawingStrings[k1] = items.get(l1);
             }
             k1++;
         }
         canvas.drawLine(paddingLeft, firstLineY, measuredWidth, firstLineY, paintIndicator);
         canvas.drawLine(paddingLeft, secondLineY, measuredWidth, secondLineY, paintIndicator);
 
-        int j1 = 0;
-        while (j1 < itemsVisible) {
+        int i = 0;
+        while (i < itemsVisible) {
             canvas.save();
             // L(弧长)=α（弧度）* r(半径) （弧度制）
             // 求弧度--> (L * π ) / (π * r)   (弧长X派/半圆周长)
             float itemHeight = maxTextHeight * lineSpacingMultiplier;
-            double radian = ((itemHeight * j1 - j2) * Math.PI) / halfCircumference;
+            double radian = ((itemHeight * i - j2) * Math.PI) / halfCircumference;
             // 弧度转换成角度(把半圆以Y轴为轴心向右转90度，使其处于第一象限及第四象限
-            float angle = (float) (90D - (radian / Math.PI) * 180D);
-            if (angle >= 90F || angle <= -90F) {
+            if (radian >= Math.PI || radian <= 0) {
                 canvas.restore();
             } else {
                 int translateY = (int) (radius - Math.cos(radian) * radius - (Math.sin(radian) * maxTextHeight) / 2D);
@@ -350,35 +349,35 @@ public class LoopView extends View {
                     // 条目经过第一条线
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, firstLineY - translateY);
-                    canvas.drawText(as[j1], getTextX(as[j1], paintOuterText, tempRect), maxTextHeight, paintOuterText);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect), maxTextHeight, paintOuterText);
                     canvas.restore();
                     canvas.save();
                     canvas.clipRect(0, firstLineY - translateY, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(as[j1], getTextX(as[j1], paintCenterText, tempRect), maxTextHeight, paintCenterText);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect), maxTextHeight, paintCenterText);
                     canvas.restore();
                 } else if (translateY <= secondLineY && maxTextHeight + translateY >= secondLineY) {
                     // 条目经过第二条线
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, secondLineY - translateY);
-                    canvas.drawText(as[j1], getTextX(as[j1], paintCenterText, tempRect), maxTextHeight, paintCenterText);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect), maxTextHeight, paintCenterText);
                     canvas.restore();
                     canvas.save();
                     canvas.clipRect(0, secondLineY - translateY, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(as[j1], getTextX(as[j1], paintOuterText, tempRect), maxTextHeight, paintOuterText);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect), maxTextHeight, paintOuterText);
                     canvas.restore();
                 } else if (translateY >= firstLineY && maxTextHeight + translateY <= secondLineY) {
                     // 中间条目
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(as[j1], getTextX(as[j1], paintCenterText, tempRect), maxTextHeight, paintCenterText);
-                    selectedItem = items.indexOf(as[j1]);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect), maxTextHeight, paintCenterText);
+                    selectedItem = items.indexOf(drawingStrings[i]);
                 } else {
                     // 其他条目
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(as[j1], getTextX(as[j1], paintOuterText, tempRect), maxTextHeight, paintOuterText);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect), maxTextHeight, paintOuterText);
                 }
                 canvas.restore();
             }
-            j1++;
+            i++;
         }
     }
 
