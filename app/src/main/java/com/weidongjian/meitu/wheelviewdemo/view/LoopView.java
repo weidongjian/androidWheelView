@@ -27,6 +27,8 @@ public class LoopView extends View {
 
     private static final int DEFAULT_TEXT_SIZE = (int) (Resources.getSystem().getDisplayMetrics().density * 15);
 
+    private static final float DEFAULT_LINE_SPACE = 2f;
+
     private static final int DEFAULT_VISIBIE_ITEMS = 9;
 
     public enum ACTION {
@@ -53,9 +55,48 @@ public class LoopView extends View {
     int textSize;
     int maxTextHeight;
 
-    int colorGray;
-    int colorBlack;
-    int colorLightGray;
+    int outerTextColor;
+
+    /**
+     * set text line space, must more than 1
+     * @param lineSpacingMultiplier
+     */
+    public void setLineSpacingMultiplier(float lineSpacingMultiplier) {
+        if (lineSpacingMultiplier > 1.0f) {
+            this.lineSpacingMultiplier = lineSpacingMultiplier;
+        }
+    }
+
+
+    /**
+     * set outer text color
+     * @param centerTextColor
+     */
+    public void setCenterTextColor(int centerTextColor) {
+        this.centerTextColor = centerTextColor;
+        paintCenterText.setColor(centerTextColor);
+    }
+
+    /**
+     * set center text color
+     * @param outerTextColor
+     */
+    public void setOuterTextColor(int outerTextColor) {
+        this.outerTextColor = outerTextColor;
+        paintOuterText.setColor(outerTextColor);
+    }
+
+    /**
+     * set divider color
+     * @param dividerColor
+     */
+    public void setDividerColor(int dividerColor) {
+        this.dividerColor = dividerColor;
+        paintIndicator.setColor(dividerColor);
+    }
+
+    int centerTextColor;
+    int dividerColor;
 
     // 条目间距倍数
     float lineSpacingMultiplier;
@@ -114,15 +155,15 @@ public class LoopView extends View {
         flingGestureDetector = new GestureDetector(context, new LoopViewGestureListener(this));
         flingGestureDetector.setIsLongpressEnabled(false);
 
-        lineSpacingMultiplier = 2.0F;
+        lineSpacingMultiplier = DEFAULT_LINE_SPACE;
         isLoop = true;
         itemsVisible = DEFAULT_VISIBIE_ITEMS;
         drawingStrings = new String[itemsVisible];
 
         textSize = DEFAULT_TEXT_SIZE;
-        colorGray = 0xffafafaf;
-        colorBlack = 0xff313131;
-        colorLightGray = 0xffc5c5c5;
+        outerTextColor = 0xffafafaf;
+        centerTextColor = 0xff313131;
+        dividerColor = 0xffc5c5c5;
 
         totalScrollY = 0;
         initPosition = -1;
@@ -149,20 +190,20 @@ public class LoopView extends View {
 
     private void initPaints() {
         paintOuterText = new Paint();
-        paintOuterText.setColor(colorGray);
+        paintOuterText.setColor(outerTextColor);
         paintOuterText.setAntiAlias(true);
         paintOuterText.setTypeface(Typeface.MONOSPACE);
         paintOuterText.setTextSize(textSize);
 
         paintCenterText = new Paint();
-        paintCenterText.setColor(colorBlack);
+        paintCenterText.setColor(centerTextColor);
         paintCenterText.setAntiAlias(true);
         paintCenterText.setTextScaleX(scaleX);
         paintCenterText.setTypeface(Typeface.MONOSPACE);
         paintCenterText.setTextSize(textSize);
 
         paintIndicator = new Paint();
-        paintIndicator.setColor(colorLightGray);
+        paintIndicator.setColor(dividerColor);
         paintIndicator.setAntiAlias(true);
 
     }
@@ -239,10 +280,17 @@ public class LoopView extends View {
         }
     }
 
-    public final void setNotLoop() {
+    /**
+     * 设置不要循环模块，默认是循环模式
+     */
+    public void setNotLoop() {
         isLoop = false;
     }
 
+    /**
+     * set text size in dp
+     * @param size
+     */
     public final void setTextSize(float size) {
         if (size > 0.0F) {
             textSize = (int) (context.getResources().getDisplayMetrics().density * size);
