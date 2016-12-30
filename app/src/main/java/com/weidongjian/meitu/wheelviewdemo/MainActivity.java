@@ -2,7 +2,7 @@ package com.weidongjian.meitu.wheelviewdemo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.widget.Toast;
 
 import com.weidongjian.meitu.wheelviewdemo.view.LoopView;
 import com.weidongjian.meitu.wheelviewdemo.view.OnItemSelectedListener;
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         loopView.setListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(int index) {
-                Log.d("debug", "Item " + index);
+                Toast.makeText(MainActivity.this, "item " + index, Toast.LENGTH_SHORT).show();
             }
         });
         //设置原始数据

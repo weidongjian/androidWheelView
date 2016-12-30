@@ -27,6 +27,8 @@ public class LoopView extends View {
 
     private static final int DEFAULT_TEXT_SIZE = (int) (Resources.getSystem().getDisplayMetrics().density * 15);
 
+    private static final int DEFAULT_VISIBIE_ITEMS = 9;
+
     public enum ACTION {
         // 点击，滑翔(滑到尽头)，拖拽事件
         CLICK, FLING, DAGGLE
@@ -114,7 +116,7 @@ public class LoopView extends View {
 
         lineSpacingMultiplier = 2.0F;
         isLoop = true;
-        itemsVisible = 9;
+        itemsVisible = DEFAULT_VISIBIE_ITEMS;
         drawingStrings = new String[itemsVisible];
 
         textSize = DEFAULT_TEXT_SIZE;
@@ -127,6 +129,23 @@ public class LoopView extends View {
 
         initPaints();
     }
+
+
+    /**
+     * 设置可见的items数量，必须是奇数
+     *
+     * @param visibleNumber
+     */
+    public void setItemsVisible(int visibleNumber) {
+        if (visibleNumber % 2 == 0) {
+            return;
+        }
+        if (visibleNumber != itemsVisible) {
+            itemsVisible = visibleNumber;
+            drawingStrings = new String[itemsVisible];
+        }
+    }
+
 
     private void initPaints() {
         paintOuterText = new Paint();
