@@ -3,6 +3,20 @@
 
 具体的请查看这个博客：http://www.jianshu.com/p/e2b3118d8ca4
 
+## 2016-12-30：各种性能效果做了很大的更新
+同时，提供各种参数接口，包括文本大小，显示数量，控件颜色等各种参数
+#### Description of Attributes
+
+|        Attributes         | Format  | Default |             Description             |
+| :-----------------------: | :-----: | :-----: | :---------------------------------: |
+|  awv_textsize| integer|  15|   textsize    |
+|    awv_lineSpace| float|  2.0f|       line space        |
+| awv_centerTextColor| integer|  oxff313131| center text color |
+| awv_outerTextColor| integer|  0xffafafaf| outer text color |
+| awv_dividerTextColor| integer|  oxff313131| center text color |
+| awv_itemsVisibleCount| integer|  9| visible item count |
+| awv_isLoop| boolean|  true| is loop mode |
+
 ![LoopView](/photo/circle.jpg)
 
 ## 滚动效果类似一个圆柱 ##
