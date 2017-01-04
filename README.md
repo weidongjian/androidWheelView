@@ -3,6 +3,13 @@
 
 具体的请查看这个博客：http://www.jianshu.com/p/fa7adfa90c68
 
+## gradle依赖
+```gradle
+dependencies {
+    compile 'com.weigan:loopView:0.1.0'
+}
+```
+
 效果图如下：
 
 ![DemoView](/photo/Gif_20161230_162613.gif)
