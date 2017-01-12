@@ -27,5 +27,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 //    compile project(':loopview')
     compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.weigan:loopView:0.1.0'
+    compile 'com.weigan:loopView:0.1.1'
 }
