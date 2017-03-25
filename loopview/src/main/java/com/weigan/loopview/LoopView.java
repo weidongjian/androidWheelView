@@ -100,7 +100,6 @@ public class LoopView extends View {
         }
     }
 
-
     /**
      * set outer text color
      * @param centerTextColor
@@ -127,8 +126,6 @@ public class LoopView extends View {
         this.dividerColor = dividerColor;
         paintIndicator.setColor(dividerColor);
     }
-
-
 
     public LoopView(Context context) {
         super(context);
@@ -158,7 +155,8 @@ public class LoopView extends View {
         centerTextColor = typedArray.getInteger(R.styleable.androidWheelView_awv_centerTextColor, 0xff313131);
         outerTextColor = typedArray.getInteger(R.styleable.androidWheelView_awv_outerTextColor, 0xffafafaf);
         dividerColor = typedArray.getInteger(R.styleable.androidWheelView_awv_dividerTextColor, 0xffc5c5c5);
-        itemsVisibleCount = typedArray.getInteger(R.styleable.androidWheelView_awv_itemsVisibleCount, DEFAULT_VISIBIE_ITEMS);
+        itemsVisibleCount =
+            typedArray.getInteger(R.styleable.androidWheelView_awv_itemsVisibleCount, DEFAULT_VISIBIE_ITEMS);
         if (itemsVisibleCount % 2 == 0) {
             itemsVisibleCount = DEFAULT_VISIBIE_ITEMS;
         }
@@ -172,7 +170,6 @@ public class LoopView extends View {
 
         initPaints();
     }
-
 
     /**
      * visible item count, must be odd number
@@ -188,7 +185,6 @@ public class LoopView extends View {
             drawingStrings = new String[itemsVisibleCount];
         }
     }
-
 
     private void initPaints() {
         paintOuterText = new Paint();
@@ -259,14 +255,16 @@ public class LoopView extends View {
                 mOffset = -mOffset;
             }
         }
-        mFuture = mExecutor.scheduleWithFixedDelay(new SmoothScrollTimerTask(this, mOffset), 0, 10, TimeUnit.MILLISECONDS);
+        mFuture =
+            mExecutor.scheduleWithFixedDelay(new SmoothScrollTimerTask(this, mOffset), 0, 10, TimeUnit.MILLISECONDS);
     }
 
     protected final void scrollBy(float velocityY) {
         cancelFuture();
         // change this number, can change fling speed
         int velocityFling = 10;
-        mFuture = mExecutor.scheduleWithFixedDelay(new InertiaTimerTask(this, velocityY), 0, velocityFling, TimeUnit.MILLISECONDS);
+        mFuture = mExecutor.scheduleWithFixedDelay(new InertiaTimerTask(this, velocityY), 0, velocityFling,
+            TimeUnit.MILLISECONDS);
     }
 
     public void cancelFuture() {
@@ -318,19 +316,18 @@ public class LoopView extends View {
     public final int getSelectedItem() {
         return selectedItem;
     }
-//
-//    protected final void scrollBy(float velocityY) {
-//        Timer timer = new Timer();
-//        mTimer = timer;
-//        timer.schedule(new InertiaTimerTask(this, velocityY, timer), 0L, 20L);
-//    }
+    //
+    // protected final void scrollBy(float velocityY) {
+    // Timer timer = new Timer();
+    // mTimer = timer;
+    // timer.schedule(new InertiaTimerTask(this, velocityY, timer), 0L, 20L);
+    // }
 
     protected final void onItemSelected() {
         if (onItemSelectedListener != null) {
             postDelayed(new OnItemSelectedRunnable(this), 200L);
         }
     }
-
 
     /**
      * link https://github.com/weidongjian/androidWheelView/issues/10
@@ -340,7 +337,6 @@ public class LoopView extends View {
     public void setScaleX(float scaleX) {
         this.scaleX = scaleX;
     }
-
 
     /**
      * set current item position
@@ -359,13 +355,11 @@ public class LoopView extends View {
         }
     }
 
-
     @Override
     protected void onDraw(Canvas canvas) {
         if (items == null) {
             return;
         }
-
 
         change = (int) (totalScrollY / (lineSpacingMultiplier * maxTextHeight));
         preCurrentIndex = initPosition + change % items.size();
@@ -426,31 +420,37 @@ public class LoopView extends View {
                     // first divider
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, firstLineY - translateY);
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect), maxTextHeight, paintOuterText);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect),
+                        maxTextHeight, paintOuterText);
                     canvas.restore();
                     canvas.save();
                     canvas.clipRect(0, firstLineY - translateY, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect), maxTextHeight, paintCenterText);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect),
+                        maxTextHeight, paintCenterText);
                     canvas.restore();
                 } else if (translateY <= secondLineY && maxTextHeight + translateY >= secondLineY) {
                     // second divider
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, secondLineY - translateY);
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect), maxTextHeight, paintCenterText);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect),
+                        maxTextHeight, paintCenterText);
                     canvas.restore();
                     canvas.save();
                     canvas.clipRect(0, secondLineY - translateY, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect), maxTextHeight, paintOuterText);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect),
+                        maxTextHeight, paintOuterText);
                     canvas.restore();
                 } else if (translateY >= firstLineY && maxTextHeight + translateY <= secondLineY) {
                     // center item
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect), maxTextHeight, paintCenterText);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect),
+                        maxTextHeight, paintCenterText);
                     selectedItem = items.indexOf(drawingStrings[i]);
                 } else {
                     // other item
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect), maxTextHeight, paintOuterText);
+                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect),
+                        maxTextHeight, paintOuterText);
                 }
                 canvas.restore();
             }
@@ -466,11 +466,15 @@ public class LoopView extends View {
         return (measuredWidth - paddingLeft - textWidth) / 2 + paddingLeft;
     }
 
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         remeasure();
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
     }
 
     @Override
@@ -483,6 +487,7 @@ public class LoopView extends View {
                 startTime = System.currentTimeMillis();
                 cancelFuture();
                 previousY = event.getRawY();
+                getParent().requestDisallowInterceptTouchEvent(true);
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -504,6 +509,7 @@ public class LoopView extends View {
                 break;
 
             case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
             default:
                 if (!eventConsumed) {
                     float y = event.getY();
@@ -519,6 +525,7 @@ public class LoopView extends View {
                         smoothScroll(ACTION.CLICK);
                     }
                 }
+                getParent().requestDisallowInterceptTouchEvent(false);
                 break;
         }
 

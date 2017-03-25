@@ -2,6 +2,7 @@ package com.weidongjian.meitu.wheelviewdemo;
 
 import java.util.ArrayList;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -44,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loopView.setCurrentPosition(0);
+                Intent intent = new Intent(MainActivity.this, ScrollViewActivity.class);
+                startActivity(intent);
             }
         });
     }
