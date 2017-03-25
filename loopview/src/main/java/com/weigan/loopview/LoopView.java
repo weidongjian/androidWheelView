@@ -487,7 +487,9 @@ public class LoopView extends View {
                 startTime = System.currentTimeMillis();
                 cancelFuture();
                 previousY = event.getRawY();
-                getParent().requestDisallowInterceptTouchEvent(true);
+                if (getParent() != null) {
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                }
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -525,7 +527,9 @@ public class LoopView extends View {
                         smoothScroll(ACTION.CLICK);
                     }
                 }
-                getParent().requestDisallowInterceptTouchEvent(false);
+                if (getParent() != null) {
+                    getParent().requestDisallowInterceptTouchEvent(false);
+                }
                 break;
         }
 
