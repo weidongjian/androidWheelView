@@ -6,27 +6,40 @@
 ## gradle依赖
 ```gradle
 dependencies {
-    compile 'com.weigan:loopView:0.1.1'
+    compile 'com.weigan:loopView:0.1.2'
 }
 ```
+
+
 
 效果图如下：
 
 ![DemoView](/photo/Gif_20161230_162613.gif)
 
+### 更新历史
+
+**版本号：0.1.2   更新时间：2017.3.25**
+
+1. 适配`setCurrentPosition(0)`的场景
+2. 适配嵌套在`ScrollerView`滑动冲突
+3. 适配在`dialog`中显示
+
+
+
 ## 2016-12-30：各种性能效果做了很大的更新
+
 同时，提供各种参数接口，包括文本大小，显示数量，控件颜色等各种参数
 #### Description of Attributes
 
-|        Attributes         | Format  | Default |             Description             |
-| :-----------------------: | :-----: | :-----: | :---------------------------------: |
-|  awv_textsize| integer|  15|   textsize    |
-|    awv_lineSpace| float|  2.0f|       line space        |
-| awv_centerTextColor| integer|  oxff313131| center text color |
-| awv_outerTextColor| integer|  0xffafafaf| outer text color |
-| awv_dividerTextColor| integer|  oxff313131| center text color |
-| awv_itemsVisibleCount| integer|  9| visible item count |
-| awv_isLoop| boolean|  true| is loop mode |
+|      Attributes       | Format  |  Default   |    Description     |
+| :-------------------: | :-----: | :--------: | :----------------: |
+|     awv_textsize      | integer |     15     |      textsize      |
+|     awv_lineSpace     |  float  |    2.0f    |     line space     |
+|  awv_centerTextColor  | integer | oxff313131 | center text color  |
+|  awv_outerTextColor   | integer | 0xffafafaf |  outer text color  |
+| awv_dividerTextColor  | integer | oxff313131 | center text color  |
+| awv_itemsVisibleCount | integer |     9      | visible item count |
+|      awv_isLoop       | boolean |    true    |    is loop mode    |
 
 ![LoopView](/photo/circle.jpg)
 
@@ -71,9 +84,9 @@ int translateY = (int) ((double) radius h1 h2;
 
 ### 最后分不同情况绘制各个条目 ###
 1. 偏移量translateY y值小于第一条线firstLineY y值的并且偏移量translateY+maxTextHeight大于第一条线y值小于第一条线firstLineY y值的（即第一条线穿过该条目文字）
-1. 条目文字穿过第二条线的情况
-1. 条目刚好在两条线中间的
-1. 其他情况
+2. 条目文字穿过第二条线的情况
+3. 条目刚好在两条线中间的
+4. 其他情况
 
 onTouchEvent方法，当手离开控件时开始平滑滚动控件
 
