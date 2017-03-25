@@ -1,13 +1,14 @@
 package com.weidongjian.meitu.wheelviewdemo;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.Toast;
 
 import com.weigan.loopview.LoopView;
 import com.weigan.loopview.OnItemSelectedListener;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +40,13 @@ public class MainActivity extends AppCompatActivity {
         });
         //设置原始数据
         loopView.setItems(list);
+
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loopView.setCurrentPosition(0);
+            }
+        });
     }
 
 }

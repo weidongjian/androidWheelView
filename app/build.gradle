@@ -19,13 +19,16 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled false
+        }
     }
 }
 
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-//    compile project(':loopview')
+    compile project(':loopview')
     compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.weigan:loopView:0.1.1'
+//    compile 'com.weigan:loopView:0.1.1'
 }

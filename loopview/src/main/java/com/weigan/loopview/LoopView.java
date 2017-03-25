@@ -1,5 +1,11 @@
 package com.weigan.loopview;
 
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -12,12 +18,6 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Weidongjian on 2015/8/18.
@@ -347,7 +347,11 @@ public class LoopView extends View {
      * @param position
      */
     public void setCurrentPosition(int position) {
-        if (position > 0 && position < items.size() && position != selectedItem) {
+        if (items == null || items.isEmpty()) {
+            return;
+        }
+        int size = items.size();
+        if (position >= 0 && position < size && position != selectedItem) {
             initPosition = position;
             totalScrollY = 0;
             mOffset = 0;
