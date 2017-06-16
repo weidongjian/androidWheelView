@@ -16,6 +16,14 @@ dependencies {
 
 ![DemoView](/photo/Gif_20161230_162613.gif)
 
+
+
+### 常见问题
+
+1. 设置初始位置：调用`setInitPosition()`，不是`setCurrentPosition()`。
+
+
+
 ### 更新历史
 
 **版本号：0.1.2   更新时间：2017.3.25**

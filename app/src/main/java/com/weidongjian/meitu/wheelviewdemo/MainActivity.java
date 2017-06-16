@@ -1,7 +1,5 @@
 package com.weidongjian.meitu.wheelviewdemo;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +8,8 @@ import android.widget.Toast;
 
 import com.weigan.loopview.LoopView;
 import com.weigan.loopview.OnItemSelectedListener;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,11 +42,13 @@ public class MainActivity extends AppCompatActivity {
         //设置原始数据
         loopView.setItems(list);
 
+        //设置初始位置
+        loopView.setInitPosition(0);
+
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ScrollViewActivity.class);
-                startActivity(intent);
+                loopView.setCurrentPosition(0);
             }
         });
 
