@@ -32,7 +32,6 @@ public class LoopView extends View {
     private static final float DEFAULT_LINE_SPACE = 2f;
 
     private static final int DEFAULT_VISIBIE_ITEMS = 9;
-    private static final String TAG = "LoopView";
 
     public enum ACTION {
         CLICK, FLING, DAGGLE
@@ -153,7 +152,6 @@ public class LoopView extends View {
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 loopView.scrollBy(velocityY);
                 if (onWheelScrollListener != null) {
-                    Log.d(TAG, "onFling: ");
                     onWheelScrollListener.OnWheelScroll(true);
                 }
                 return true;
@@ -345,7 +343,6 @@ public class LoopView extends View {
             postDelayed(new OnItemSelectedRunnable(this), 200L);
         }
         if (onWheelScrollListener != null) {
-            Log.d(TAG, "onItemSelected: ");
             onWheelScrollListener.OnWheelScroll(false);
         }
     }
