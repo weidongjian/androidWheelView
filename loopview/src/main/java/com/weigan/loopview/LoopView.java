@@ -15,6 +15,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +32,7 @@ public class LoopView extends View {
     private static final float DEFAULT_LINE_SPACE = 2f;
 
     private static final int DEFAULT_VISIBIE_ITEMS = 9;
+    private static final String TAG = "LoopView";
 
     public enum ACTION {
         CLICK, FLING, DAGGLE
@@ -41,6 +43,7 @@ public class LoopView extends View {
     Handler handler;
     private GestureDetector flingGestureDetector;
     OnItemSelectedListener onItemSelectedListener;
+    OnWheelScrollListener onWheelScrollListener;
 
     // Timer mTimer;
     ScheduledExecutorService mExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -145,7 +148,17 @@ public class LoopView extends View {
     private void initLoopView(Context context, AttributeSet attributeset) {
         this.context = context;
         handler = new MessageHandler(this);
-        flingGestureDetector = new GestureDetector(context, new LoopViewGestureListener(this));
+        flingGestureDetector = new GestureDetector(context, new LoopViewGestureListener(this) {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                loopView.scrollBy(velocityY);
+                if (onWheelScrollListener != null) {
+                    Log.d(TAG, "onFling: ");
+                    onWheelScrollListener.OnWheelScroll(true);
+                }
+                return true;
+            }
+        });
         flingGestureDetector.setIsLongpressEnabled(false);
 
         TypedArray typedArray = context.obtainStyledAttributes(attributeset, R.styleable.androidWheelView);
@@ -307,6 +320,10 @@ public class LoopView extends View {
         onItemSelectedListener = OnItemSelectedListener;
     }
 
+    public void setOnWheelScrollListener(OnWheelScrollListener onWheelScrollListener) {
+        this.onWheelScrollListener = onWheelScrollListener;
+    }
+
     public final void setItems(List<String> items) {
         this.items = items;
         remeasure();
@@ -326,6 +343,10 @@ public class LoopView extends View {
     protected final void onItemSelected() {
         if (onItemSelectedListener != null) {
             postDelayed(new OnItemSelectedRunnable(this), 200L);
+        }
+        if (onWheelScrollListener != null) {
+            Log.d(TAG, "onItemSelected: ");
+            onWheelScrollListener.OnWheelScroll(false);
         }
     }
 
