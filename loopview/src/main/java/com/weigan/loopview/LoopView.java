@@ -1,5 +1,6 @@
 package com.weigan.loopview;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -74,7 +75,8 @@ public class LoopView extends View {
 
     int itemsVisibleCount;
 
-    String[] drawingStrings;
+    HashMap<Integer,String> drawingStrings;
+//    HashMap<String,Integer> drawingStr
 
     int measuredHeight;
     int measuredWidth;
@@ -163,8 +165,8 @@ public class LoopView extends View {
         isLoop = typedArray.getBoolean(R.styleable.androidWheelView_awv_isLoop, true);
         typedArray.recycle();
 
-        drawingStrings = new String[itemsVisibleCount];
-
+//        drawingStrings = new String[itemsVisibleCount];
+        drawingStrings=new HashMap<>();
         totalScrollY = 0;
         initPosition = -1;
 
@@ -182,7 +184,8 @@ public class LoopView extends View {
         }
         if (visibleNumber != itemsVisibleCount) {
             itemsVisibleCount = visibleNumber;
-            drawingStrings = new String[itemsVisibleCount];
+//            drawingStrings = new String[itemsVisibleCount];
+            drawingStrings=new HashMap<>();
         }
     }
 
@@ -392,13 +395,16 @@ public class LoopView extends View {
                 while (l1 > items.size() - 1) {
                     l1 = l1 - items.size();
                 }
-                drawingStrings[k1] = items.get(l1);
+                drawingStrings.put(k1,items.get(l1));
             } else if (l1 < 0) {
-                drawingStrings[k1] = "";
+//                drawingStrings[k1] = "";
+                drawingStrings.put(k1,"");
             } else if (l1 > items.size() - 1) {
-                drawingStrings[k1] = "";
+//                drawingStrings[k1] = "";
+                drawingStrings.put(k1,"");
             } else {
-                drawingStrings[k1] = items.get(l1);
+               // drawingStrings[k1] = items.get(l1);
+                drawingStrings.put(k1,items.get(l1));
             }
             k1++;
         }
@@ -420,36 +426,37 @@ public class LoopView extends View {
                     // first divider
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, firstLineY - translateY);
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect),
+                    canvas.drawText(drawingStrings.get(i), getTextX(drawingStrings.get(i), paintOuterText, tempRect),
                         maxTextHeight, paintOuterText);
                     canvas.restore();
                     canvas.save();
                     canvas.clipRect(0, firstLineY - translateY, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect),
+                    canvas.drawText(drawingStrings.get(i), getTextX(drawingStrings.get(i), paintCenterText, tempRect),
                         maxTextHeight, paintCenterText);
                     canvas.restore();
                 } else if (translateY <= secondLineY && maxTextHeight + translateY >= secondLineY) {
                     // second divider
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, secondLineY - translateY);
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect),
+                    canvas.drawText(drawingStrings.get(i), getTextX(drawingStrings.get(i), paintCenterText, tempRect),
                         maxTextHeight, paintCenterText);
                     canvas.restore();
                     canvas.save();
                     canvas.clipRect(0, secondLineY - translateY, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect),
+                    canvas.drawText(drawingStrings.get(i), getTextX(drawingStrings.get(i), paintOuterText, tempRect),
                         maxTextHeight, paintOuterText);
                     canvas.restore();
                 } else if (translateY >= firstLineY && maxTextHeight + translateY <= secondLineY) {
                     // center item
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintCenterText, tempRect),
+                    canvas.drawText(drawingStrings.get(i), getTextX(drawingStrings.get(i), paintCenterText, tempRect),
                         maxTextHeight, paintCenterText);
-                    selectedItem = items.indexOf(drawingStrings[i]);
+                    selectedItem = items.indexOf(drawingStrings.get(i));
+
                 } else {
                     // other item
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings[i], getTextX(drawingStrings[i], paintOuterText, tempRect),
+                    canvas.drawText(drawingStrings.get(i), getTextX(drawingStrings.get(i), paintOuterText, tempRect),
                         maxTextHeight, paintOuterText);
                 }
                 canvas.restore();
