@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="androidWheelView">
+    <declare-styleable name="LoopView">
         <attr name="awv_textsize" format="integer" />
         <attr name="awv_lineSpace" format="float" />
         <attr name="awv_centerTextColor" format="integer" />

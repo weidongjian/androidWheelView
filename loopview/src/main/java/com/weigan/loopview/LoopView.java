@@ -12,11 +12,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,12 +32,12 @@ public class LoopView extends View {
 
     private static final int DEFAULT_TEXT_SIZE = (int) (Resources.getSystem().getDisplayMetrics().density * 15);
 
-    private static final float DEFAULT_LINE_SPACE = 2f;
+    private static final float DEFAULT_LINE_SPACE = 1f;
 
     private static final int DEFAULT_VISIBIE_ITEMS = 9;
 
     public enum ACTION {
-        CLICK, FLING, DAGGLE
+        CLICK, FLING, DRAG
     }
 
     private Context context;
@@ -55,7 +57,10 @@ public class LoopView extends View {
     List<IndexString> items;
 
     int textSize;
-    int maxTextHeight;
+    int itemTextHeight;
+
+    //文本的高度
+    int textHeight;
 
     int outerTextColor;
 
@@ -92,6 +97,8 @@ public class LoopView extends View {
     private Rect tempRect = new Rect();
 
     private int paddingLeft, paddingRight;
+
+    private Typeface typeface = Typeface.MONOSPACE;
 
     /**
      * set text line space, must more than 1
@@ -130,6 +137,14 @@ public class LoopView extends View {
         paintIndicator.setColor(dividerColor);
     }
 
+    /**
+     * set text typeface
+     * @param typeface
+     */
+    public void setTypeface(Typeface typeface) {
+        this.typeface = typeface;
+    }
+
     public LoopView(Context context) {
         super(context);
         initLoopView(context, null);
@@ -151,22 +166,23 @@ public class LoopView extends View {
         flingGestureDetector = new GestureDetector(context, new LoopViewGestureListener(this));
         flingGestureDetector.setIsLongpressEnabled(false);
 
-        TypedArray typedArray = context.obtainStyledAttributes(attributeset, R.styleable.androidWheelView);
-        textSize = typedArray.getInteger(R.styleable.androidWheelView_awv_textsize, DEFAULT_TEXT_SIZE);
-        textSize = (int) (Resources.getSystem().getDisplayMetrics().density * textSize);
-        lineSpacingMultiplier = typedArray.getFloat(R.styleable.androidWheelView_awv_lineSpace, DEFAULT_LINE_SPACE);
-        centerTextColor = typedArray.getInteger(R.styleable.androidWheelView_awv_centerTextColor, 0xff313131);
-        outerTextColor = typedArray.getInteger(R.styleable.androidWheelView_awv_outerTextColor, 0xffafafaf);
-        dividerColor = typedArray.getInteger(R.styleable.androidWheelView_awv_dividerTextColor, 0xffc5c5c5);
-        itemsVisibleCount =
-            typedArray.getInteger(R.styleable.androidWheelView_awv_itemsVisibleCount, DEFAULT_VISIBIE_ITEMS);
-        if (itemsVisibleCount % 2 == 0) {
-            itemsVisibleCount = DEFAULT_VISIBIE_ITEMS;
+        TypedArray typedArray = context.obtainStyledAttributes(attributeset, R.styleable.LoopView);
+        if (typedArray != null) {
+            textSize = typedArray.getInteger(R.styleable.LoopView_awv_textsize, DEFAULT_TEXT_SIZE);
+            textSize = (int) (Resources.getSystem().getDisplayMetrics().density * textSize);
+            lineSpacingMultiplier = typedArray.getFloat(R.styleable.LoopView_awv_lineSpace, DEFAULT_LINE_SPACE);
+            centerTextColor = typedArray.getInteger(R.styleable.LoopView_awv_centerTextColor, 0xff313131);
+            outerTextColor = typedArray.getInteger(R.styleable.LoopView_awv_outerTextColor, 0xffafafaf);
+            dividerColor = typedArray.getInteger(R.styleable.LoopView_awv_dividerTextColor, 0xffc5c5c5);
+            itemsVisibleCount =
+                    typedArray.getInteger(R.styleable.LoopView_awv_itemsVisibleCount, DEFAULT_VISIBIE_ITEMS);
+            if (itemsVisibleCount % 2 == 0) {
+                itemsVisibleCount = DEFAULT_VISIBIE_ITEMS;
+            }
+            isLoop = typedArray.getBoolean(R.styleable.LoopView_awv_isLoop, true);
+            typedArray.recycle();
         }
-        isLoop = typedArray.getBoolean(R.styleable.androidWheelView_awv_isLoop, true);
-        typedArray.recycle();
 
-//        drawingStrings = new String[itemsVisibleCount];
         drawingStrings=new HashMap<>();
         totalScrollY = 0;
         initPosition = -1;
@@ -185,7 +201,6 @@ public class LoopView extends View {
         }
         if (visibleNumber != itemsVisibleCount) {
             itemsVisibleCount = visibleNumber;
-//            drawingStrings = new String[itemsVisibleCount];
             drawingStrings=new HashMap<>();
         }
     }
@@ -194,24 +209,23 @@ public class LoopView extends View {
         paintOuterText = new Paint();
         paintOuterText.setColor(outerTextColor);
         paintOuterText.setAntiAlias(true);
-        paintOuterText.setTypeface(Typeface.MONOSPACE);
+        paintOuterText.setTypeface(typeface);
         paintOuterText.setTextSize(textSize);
 
         paintCenterText = new Paint();
         paintCenterText.setColor(centerTextColor);
         paintCenterText.setAntiAlias(true);
         paintCenterText.setTextScaleX(scaleX);
-        paintCenterText.setTypeface(Typeface.MONOSPACE);
+        paintCenterText.setTypeface(typeface);
         paintCenterText.setTextSize(textSize);
 
         paintIndicator = new Paint();
         paintIndicator.setColor(dividerColor);
         paintIndicator.setAntiAlias(true);
-
     }
 
     private void remeasure() {
-        if (items == null) {
+        if (items == null || items.isEmpty()) {
             return;
         }
 
@@ -229,14 +243,14 @@ public class LoopView extends View {
         measuredWidth = measuredWidth - paddingRight;
 
         paintCenterText.getTextBounds("\u661F\u671F", 0, 2, tempRect); // 星期
-        maxTextHeight = tempRect.height();
+        textHeight = tempRect.height();
         halfCircumference = (int) (measuredHeight * Math.PI / 2);
 
-        maxTextHeight = (int) (halfCircumference / (lineSpacingMultiplier * (itemsVisibleCount - 1)));
+        itemTextHeight = (int) (halfCircumference / (lineSpacingMultiplier * (itemsVisibleCount - 1)));
 
         radius = measuredHeight / 2;
-        firstLineY = (int) ((measuredHeight - lineSpacingMultiplier * maxTextHeight) / 2.0F);
-        secondLineY = (int) ((measuredHeight + lineSpacingMultiplier * maxTextHeight) / 2.0F);
+        firstLineY = (int) ((measuredHeight - lineSpacingMultiplier * itemTextHeight) / 2.0F);
+        secondLineY = (int) ((measuredHeight + lineSpacingMultiplier * itemTextHeight) / 2.0F);
         if (initPosition == -1) {
             if (isLoop) {
                 initPosition = (items.size() + 1) / 2;
@@ -250,8 +264,8 @@ public class LoopView extends View {
 
     void smoothScroll(ACTION action) {
         cancelFuture();
-        if (action == ACTION.FLING || action == ACTION.DAGGLE) {
-            float itemHeight = lineSpacingMultiplier * maxTextHeight;
+        if (action == ACTION.FLING || action == ACTION.DRAG) {
+            float itemHeight = lineSpacingMultiplier * itemTextHeight;
             mOffset = (int) ((totalScrollY % itemHeight + itemHeight) % itemHeight);
             if ((float) mOffset > itemHeight / 2.0F) {
                 mOffset = (int) (itemHeight - (float) mOffset);
@@ -327,7 +341,7 @@ public class LoopView extends View {
     }
 
     public final int getSelectedItem() {
-        return selectedItem;
+        return preCurrentIndex;
     }
     //
     // protected final void scrollBy(float velocityY) {
@@ -370,11 +384,12 @@ public class LoopView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (items == null) {
+        super.onDraw(canvas);
+        if (items == null || items.isEmpty()) {
             return;
         }
 
-        change = (int) (totalScrollY / (lineSpacingMultiplier * maxTextHeight));
+        change = (int) (totalScrollY / (lineSpacingMultiplier * itemTextHeight));
         preCurrentIndex = initPosition + change % items.size();
 
         if (!isLoop) {
@@ -393,7 +408,7 @@ public class LoopView extends View {
             }
         }
 
-        int j2 = (int) (totalScrollY % (lineSpacingMultiplier * maxTextHeight));
+        int j2 = (int) (totalScrollY % (lineSpacingMultiplier * itemTextHeight));
         // put value to drawingString
         int k1 = 0;
         while (k1 < itemsVisibleCount) {
@@ -424,55 +439,70 @@ public class LoopView extends View {
         int i = 0;
         while (i < itemsVisibleCount) {
             canvas.save();
-            float itemHeight = maxTextHeight * lineSpacingMultiplier;
+            float itemHeight = itemTextHeight * lineSpacingMultiplier;
             double radian = ((itemHeight * i - j2) * Math.PI) / halfCircumference;
             if (radian >= Math.PI || radian <= 0) {
                 canvas.restore();
             } else {
-                int translateY = (int) (radius - Math.cos(radian) * radius - (Math.sin(radian) * maxTextHeight) / 2D);
+                int translateY = (int) (radius - Math.cos(radian) * radius - (Math.sin(radian) * itemTextHeight) / 2D);
                 canvas.translate(0.0F, translateY);
                 canvas.scale(1.0F, (float) Math.sin(radian));
-                if (translateY <= firstLineY && maxTextHeight + translateY >= firstLineY) {
+                if (translateY <= firstLineY && itemTextHeight + translateY >= firstLineY) {
                     // first divider
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, firstLineY - translateY);
-                    canvas.drawText(drawingStrings.get(i).string, getTextX(drawingStrings.get(i).string, paintOuterText, tempRect),
-                        maxTextHeight, paintOuterText);
+                    drawOuterText(canvas, i);
                     canvas.restore();
                     canvas.save();
                     canvas.clipRect(0, firstLineY - translateY, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings.get(i).string, getTextX(drawingStrings.get(i).string, paintCenterText, tempRect),
-                        maxTextHeight, paintCenterText);
+                    drawCenterText(canvas, i);
                     canvas.restore();
-                } else if (translateY <= secondLineY && maxTextHeight + translateY >= secondLineY) {
+                } else if (translateY <= secondLineY && itemTextHeight + translateY >= secondLineY) {
                     // second divider
                     canvas.save();
                     canvas.clipRect(0, 0, measuredWidth, secondLineY - translateY);
-                    canvas.drawText(drawingStrings.get(i).string, getTextX(drawingStrings.get(i).string, paintCenterText, tempRect),
-                        maxTextHeight, paintCenterText);
+                    drawCenterText(canvas, i);
                     canvas.restore();
                     canvas.save();
                     canvas.clipRect(0, secondLineY - translateY, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings.get(i).string, getTextX(drawingStrings.get(i).string, paintOuterText, tempRect),
-                        maxTextHeight, paintOuterText);
+                    drawOuterText(canvas, i);
                     canvas.restore();
-                } else if (translateY >= firstLineY && maxTextHeight + translateY <= secondLineY) {
+                } else if (translateY >= firstLineY && itemTextHeight + translateY <= secondLineY) {
                     // center item
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings.get(i).string, getTextX(drawingStrings.get(i).string, paintCenterText, tempRect),
-                        maxTextHeight, paintCenterText);
+                    drawCenterText(canvas, i);
                     selectedItem = items.indexOf(drawingStrings.get(i));
                 } else {
                     // other item
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
-                    canvas.drawText(drawingStrings.get(i).string, getTextX(drawingStrings.get(i).string, paintOuterText, tempRect),
-                        maxTextHeight, paintOuterText);
+                    drawOuterText(canvas, i);
                 }
                 canvas.restore();
             }
             i++;
         }
     }
+
+
+    private void drawOuterText(Canvas canvas, int position) {
+        canvas.drawText(drawingStrings.get(position).string, getTextX(drawingStrings.get(position).string, paintOuterText, tempRect),
+                getDrawingY(), paintOuterText);
+    }
+
+    private void drawCenterText(Canvas canvas, int position) {
+        canvas.drawText(drawingStrings.get(position).string, getTextX(drawingStrings.get(position).string, paintOuterText, tempRect),
+                getDrawingY(), paintCenterText);
+    }
+
+
+    private int getDrawingY() {
+        if (itemTextHeight > textHeight) {
+            return itemTextHeight - ((itemTextHeight - textHeight) / 2);
+        } else {
+            return itemTextHeight;
+        }
+    }
+
 
     // text start drawing position
     private int getTextX(String a, Paint paint, Rect rect) {
@@ -496,7 +526,7 @@ public class LoopView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean eventConsumed = flingGestureDetector.onTouchEvent(event);
-        float itemHeight = lineSpacingMultiplier * maxTextHeight;
+        float itemHeight = lineSpacingMultiplier * itemTextHeight;
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -538,7 +568,7 @@ public class LoopView extends View {
                     mOffset = (int) ((circlePosition - itemsVisibleCount / 2) * itemHeight - extraOffset);
 
                     if ((System.currentTimeMillis() - startTime) > 120) {
-                        smoothScroll(ACTION.DAGGLE);
+                        smoothScroll(ACTION.DRAG);
                     } else {
                         smoothScroll(ACTION.CLICK);
                     }

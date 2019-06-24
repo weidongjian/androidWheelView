@@ -20,8 +20,9 @@
         android:layout_marginTop="50dp"
         android:id="@+id/loopView"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="200dp"
         app:awv_textsize="18"
+        app:awv_isLoop="false"
         />
 
     <Button

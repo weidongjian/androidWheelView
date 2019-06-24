@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
-            list.add("item " + i);
+            list.add("item gp" + i);
         }
         //设置是否循环播放
 //        loopView.setNotLoop();
