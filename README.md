@@ -6,7 +6,7 @@
 ## gradle依赖
 ```gradle
 dependencies {
-    compile 'com.weigan:loopView:0.2.0'
+    compile 'com.weigan:loopView:0.2.1'
 }
 ```
 
