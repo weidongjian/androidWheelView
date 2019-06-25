@@ -22,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
         final LoopView loopView = (LoopView) findViewById(R.id.loopView);
 
+        //set type face
+//        loopView.setTypeface(Typeface.DEFAULT_BOLD);
+
         ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
             list.add("item gp" + i);

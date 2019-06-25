@@ -1,5 +1,18 @@
 package com.weigan.loopview;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.os.Handler;
+import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,21 +20,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.Typeface;
-import android.os.Handler;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
 
 /**
  * Created by Weidongjian on 2015/8/18.
@@ -187,8 +185,8 @@ public class LoopView extends View {
         totalScrollY = 0;
         initPosition = -1;
 
-        initPaints();
     }
+
 
     /**
      * visible item count, must be odd number
@@ -205,23 +203,30 @@ public class LoopView extends View {
         }
     }
 
-    private void initPaints() {
-        paintOuterText = new Paint();
-        paintOuterText.setColor(outerTextColor);
-        paintOuterText.setAntiAlias(true);
-        paintOuterText.setTypeface(typeface);
-        paintOuterText.setTextSize(textSize);
+    private void initPaintsIfPosssible() {
+        if (paintOuterText == null) {
+            paintOuterText = new Paint();
+            paintOuterText.setColor(outerTextColor);
+            paintOuterText.setAntiAlias(true);
+            paintOuterText.setTypeface(typeface);
+            paintOuterText.setTextSize(textSize);
+        }
 
-        paintCenterText = new Paint();
-        paintCenterText.setColor(centerTextColor);
-        paintCenterText.setAntiAlias(true);
-        paintCenterText.setTextScaleX(scaleX);
-        paintCenterText.setTypeface(typeface);
-        paintCenterText.setTextSize(textSize);
 
-        paintIndicator = new Paint();
-        paintIndicator.setColor(dividerColor);
-        paintIndicator.setAntiAlias(true);
+        if (paintCenterText == null) {
+            paintCenterText = new Paint();
+            paintCenterText.setColor(centerTextColor);
+            paintCenterText.setAntiAlias(true);
+            paintCenterText.setTextScaleX(scaleX);
+            paintCenterText.setTypeface(typeface);
+            paintCenterText.setTextSize(textSize);
+        }
+
+        if (paintIndicator == null) {
+            paintIndicator = new Paint();
+            paintIndicator.setColor(dividerColor);
+            paintIndicator.setAntiAlias(true);
+        }
     }
 
     private void remeasure() {
@@ -515,13 +520,10 @@ public class LoopView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        initPaintsIfPosssible();
         remeasure();
     }
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

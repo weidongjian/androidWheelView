@@ -29,7 +29,7 @@ publish {
     userOrg = 'weigan'//bintray.com用户名
     groupId = 'com.weigan'//jcenter上的路径
     artifactId = 'loopView'//项目名称
-    publishVersion = '0.2.0'//版本号
+    publishVersion = '0.2.1'//版本号
     desc = 'A wheelView for android'//描述，不重要
     website = 'https://github.com/weidongjian/androidWheelView'//网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
 }
