@@ -15,12 +15,14 @@ public class MainActivity extends AppCompatActivity {
 
     private Toast toast;
 
+    private LoopView loopView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final LoopView loopView = (LoopView) findViewById(R.id.loopView);
+        loopView = (LoopView) findViewById(R.id.loopView);
 
         //set type face
 //        loopView.setTypeface(Typeface.DEFAULT_BOLD);
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         loopView.setItems(list);
 
         //设置初始位置
-        loopView.setInitPosition(0);
+        loopView.setInitPosition(4);
 
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +71,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
 }
