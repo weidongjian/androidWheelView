@@ -64,6 +64,7 @@ public class DialogActivity extends AppCompatActivity {
                 }
                 toast.setText("item " + index);
                 toast.show();
+
             }
         });
         // 设置原始数据
