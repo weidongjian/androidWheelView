@@ -105,4 +105,4 @@ LoopViewGestureListener处理手势，当按下时取消所有的滚动，当滑
 
 平滑滚动用定时器ScheduledExecutorService来处理
 
-哪里写的不对的希望大家指正。
+哪里写的不对的希望大家指正啊。
