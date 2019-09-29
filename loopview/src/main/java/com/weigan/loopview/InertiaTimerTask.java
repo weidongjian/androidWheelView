@@ -7,6 +7,8 @@ package com.weigan.loopview;
 // Referenced classes of package com.qingchifan.view:
 //            LoopView
 
+import android.util.Log;
+
 final class InertiaTimerTask implements Runnable {
 
     float a;
@@ -34,6 +36,8 @@ final class InertiaTimerTask implements Runnable {
             }
         }
         if (Math.abs(a) >= 0.0F && Math.abs(a) <= 20F) {
+            Log.i("gy","WHAT_SMOOTH_SCROLL_INERTIA");
+            loopView.handler.sendEmptyMessageDelayed(MessageHandler.WHAT_SMOOTH_SCROLL_INERTIA,60);
             loopView.cancelFuture();
             loopView.handler.sendEmptyMessage(MessageHandler.WHAT_SMOOTH_SCROLL);
             return;

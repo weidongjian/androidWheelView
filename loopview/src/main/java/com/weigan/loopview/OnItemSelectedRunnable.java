@@ -7,6 +7,8 @@ package com.weigan.loopview;
 // Referenced classes of package com.qingchifan.view:
 //            LoopView, OnItemSelectedListener
 
+import android.util.Log;
+
 final class OnItemSelectedRunnable implements Runnable {
     final LoopView loopView;
 

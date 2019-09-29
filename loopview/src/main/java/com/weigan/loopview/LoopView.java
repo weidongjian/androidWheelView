@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,6 +35,14 @@ public class LoopView extends View {
 
     private static final int DEFAULT_VISIBIE_ITEMS = 9;
 
+    public static final int SCROLL_STATE_IDLE = 0;     // 停止滚动
+    public static final int SCROLL_STATE_SETTING = 1;  // 用户设置
+    public static final int SCROLL_STATE_DRAGGING = 2; // 用户按住滚轮拖拽
+    public static final int SCROLL_STATE_SCROLLING = 3; // 依靠惯性滚动
+
+    int lastScrollState = SCROLL_STATE_IDLE;
+    int currentScrollState = SCROLL_STATE_SETTING;
+
     public enum ACTION {
         CLICK, FLING, DRAG
     }
@@ -43,6 +52,7 @@ public class LoopView extends View {
     Handler handler;
     private GestureDetector flingGestureDetector;
     OnItemSelectedListener onItemSelectedListener;
+    OnItemScrollListener mOnItemScrollListener;
 
     // Timer mTimer;
     ScheduledExecutorService mExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -114,7 +124,10 @@ public class LoopView extends View {
      */
     public void setCenterTextColor(int centerTextColor) {
         this.centerTextColor = centerTextColor;
-        paintCenterText.setColor(centerTextColor);
+        if(paintCenterText != null){
+            paintCenterText.setColor(centerTextColor);
+        }
+
     }
 
     /**
@@ -123,7 +136,9 @@ public class LoopView extends View {
      */
     public void setOuterTextColor(int outerTextColor) {
         this.outerTextColor = outerTextColor;
-        paintOuterText.setColor(outerTextColor);
+        if(paintOuterText != null){
+            paintOuterText.setColor(outerTextColor);
+        }
     }
 
     /**
@@ -132,7 +147,9 @@ public class LoopView extends View {
      */
     public void setDividerColor(int dividerColor) {
         this.dividerColor = dividerColor;
-        paintIndicator.setColor(dividerColor);
+        if(paintIndicator != null){
+            paintIndicator.setColor(dividerColor);
+        }
     }
 
     /**
@@ -184,7 +201,6 @@ public class LoopView extends View {
         drawingStrings=new HashMap<>();
         totalScrollY = 0;
         initPosition = -1;
-
     }
 
 
@@ -203,7 +219,7 @@ public class LoopView extends View {
         }
     }
 
-    private void initPaintsIfPosssible() {
+    private void initPaintsIfPossible() {
         if (paintOuterText == null) {
             paintOuterText = new Paint();
             paintOuterText.setColor(outerTextColor);
@@ -280,6 +296,7 @@ public class LoopView extends View {
         }
         mFuture =
             mExecutor.scheduleWithFixedDelay(new SmoothScrollTimerTask(this, mOffset), 0, 10, TimeUnit.MILLISECONDS);
+        changeScrollState(SCROLL_STATE_SCROLLING);
     }
 
     protected final void scrollBy(float velocityY) {
@@ -288,12 +305,43 @@ public class LoopView extends View {
         int velocityFling = 10;
         mFuture = mExecutor.scheduleWithFixedDelay(new InertiaTimerTask(this, velocityY), 0, velocityFling,
             TimeUnit.MILLISECONDS);
+        changeScrollState(SCROLL_STATE_DRAGGING);
     }
 
     public void cancelFuture() {
         if (mFuture != null && !mFuture.isCancelled()) {
             mFuture.cancel(true);
             mFuture = null;
+            changeScrollState(SCROLL_STATE_IDLE);
+        }
+    }
+
+    /**
+     * 打印方法调用堆栈链信息 用于调试
+     * @param methodName
+     */
+    private void printMethodStackTrace(String methodName){
+        StackTraceElement[] invokers = Thread.currentThread().getStackTrace();
+        StringBuilder sb = new StringBuilder("printMethodStackTrace ");
+        sb.append(methodName);
+        sb.append(" ");
+        for(int i= invokers.length -1;i >= 4;i--){
+            StackTraceElement invoker = invokers[i];
+            sb.append(String.format("%s(%d).%s",invoker.getFileName(),invoker.getLineNumber(),invoker.getMethodName()));
+            if(i > 4){
+                sb.append("-->");
+            }
+        }
+        Log.i("printMethodStackTrace",sb.toString());
+    }
+
+    private void changeScrollState(int scrollState){
+        if(scrollState != currentScrollState && !handler.hasMessages(MessageHandler.WHAT_SMOOTH_SCROLL_INERTIA)){
+            lastScrollState = currentScrollState;
+            currentScrollState = scrollState;
+//            if(scrollState == SCROLL_STATE_SCROLLING || scrollState == SCROLL_STATE_IDLE){
+//                printMethodStackTrace("changeScrollState");
+//            }
         }
     }
 
@@ -311,8 +359,13 @@ public class LoopView extends View {
     public final void setTextSize(float size) {
         if (size > 0.0F) {
             textSize = (int) (context.getResources().getDisplayMetrics().density * size);
-            paintOuterText.setTextSize(textSize);
-            paintCenterText.setTextSize(textSize);
+            if(paintOuterText != null){
+                paintOuterText.setTextSize(textSize);
+            }
+            if(paintCenterText != null){
+                paintCenterText.setTextSize(textSize);
+            }
+
         }
     }
 
@@ -329,6 +382,12 @@ public class LoopView extends View {
     public final void setListener(OnItemSelectedListener OnItemSelectedListener) {
         onItemSelectedListener = OnItemSelectedListener;
     }
+
+    public final void setOnItemScrollListener(OnItemScrollListener mOnItemScrollListener){
+        this.mOnItemScrollListener = mOnItemScrollListener;
+    }
+
+
 
     public final void setItems(List<String> items) {
 
@@ -383,6 +442,7 @@ public class LoopView extends View {
             initPosition = position;
             totalScrollY = 0;
             mOffset = 0;
+            changeScrollState(SCROLL_STATE_SETTING);
             invalidate();
         }
     }
@@ -486,6 +546,20 @@ public class LoopView extends View {
             }
             i++;
         }
+
+        if(currentScrollState != lastScrollState){
+            int oldScrollState = lastScrollState;
+            lastScrollState = currentScrollState;
+            if(mOnItemScrollListener != null){
+                mOnItemScrollListener.onItemScrollStateChanged(this,getSelectedItem(),oldScrollState,currentScrollState,totalScrollY);
+            }
+
+        }
+        if(currentScrollState == SCROLL_STATE_DRAGGING || currentScrollState == SCROLL_STATE_SCROLLING){
+            if(mOnItemScrollListener != null){
+                mOnItemScrollListener.onItemScrolling(this,getSelectedItem(),currentScrollState,totalScrollY);
+            }
+        }
     }
 
 
@@ -520,7 +594,7 @@ public class LoopView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        initPaintsIfPosssible();
+        initPaintsIfPossible();
         remeasure();
     }
 
@@ -556,6 +630,7 @@ public class LoopView extends View {
                         totalScrollY = (int) bottom;
                     }
                 }
+                changeScrollState(SCROLL_STATE_DRAGGING);
                 break;
 
             case MotionEvent.ACTION_UP:
