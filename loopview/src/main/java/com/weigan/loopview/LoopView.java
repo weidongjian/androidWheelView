@@ -83,7 +83,6 @@ public class LoopView extends View {
 
     int totalScrollY;
     int initPosition;
-    private int selectedItem;
     int preCurrentIndex;
     int change;
 
@@ -438,7 +437,7 @@ public class LoopView extends View {
             return;
         }
         int size = items.size();
-        if (position >= 0 && position < size && position != selectedItem) {
+        if (position >= 0 && position < size && position != getSelectedItem()) {
             initPosition = position;
             totalScrollY = 0;
             mOffset = 0;
@@ -536,7 +535,6 @@ public class LoopView extends View {
                     // center item
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
                     drawCenterText(canvas, i);
-                    selectedItem = items.indexOf(drawingStrings.get(i));
                 } else {
                     // other item
                     canvas.clipRect(0, 0, measuredWidth, (int) (itemHeight));
