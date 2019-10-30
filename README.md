@@ -6,7 +6,7 @@
 ## gradle依赖
 ```gradle
 dependencies {
-    api 'com.weigan:loopView:0.2.1'
+    api 'com.weigan:loopView:0.2.2'
 }
 ```
 
@@ -25,6 +25,8 @@ dependencies {
 
 
 ### 更新历史
+**版本号：0.2.2 更新时间：2019.10.30
+修复设置当前位置为0无效的异常
 
 **版本号：0.2.1 更新时间：2019.6.25
 修复一波bug
