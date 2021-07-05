@@ -442,6 +442,8 @@ public class LoopView extends View {
             totalScrollY = 0;
             mOffset = 0;
             changeScrollState(SCROLL_STATE_SETTING);
+            remeasure();
+            handler.sendEmptyMessage(MessageHandler.WHAT_ITEM_SELECTED);
             invalidate();
         }
     }

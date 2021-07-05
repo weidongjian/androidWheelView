@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loopView.setCurrentPosition(0);
+                loopView.setCurrentPosition(4);
             }
         });
 
