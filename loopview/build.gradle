@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 29
@@ -21,6 +20,7 @@ android {
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
 }
+/*
 
 publish {
     userOrg = 'weigan'//bintray.com用户名
@@ -30,3 +30,4 @@ publish {
     desc = 'A wheelView for android'//描述，不重要
     website = 'https://github.com/weidongjian/androidWheelView'//网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
 }
+*/
