@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
 
 android {
     compileSdkVersion 29
@@ -21,104 +19,6 @@ android {
 
 dependencies {
     api fileTree(dir: 'libs', include: ['*.jar'])
-}
-
-
-task androidSourcesJar(type: Jar) {
-    archiveClassifier.set("sources")
-    from android.sourceSets.main.java.source
-    exclude "**/R.class"
-    exclude "**/BuildConfig.class"
-}
-
-publishing {
-    // 定义发布什么
-    publications {
-        mavenJava(MavenPublication) {
-            // group id，发布后引用的依赖的 group id
-            groupId 'io.github.weidongjian'
-            // 发布后引用的依赖的 artifact id
-            artifactId 'wheelview'
-            // 发布的版本
-            version '1.0.0'
-            // 发布的 arr 的文件和源码文件
-            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
-            artifact androidSourcesJar
-            pom {
-                // 构件名称，可以自定义
-                name = 'wheelview'
-                // 构件描述
-                description = 'Android Wheel View'
-                // 构件主页
-                url = 'https://github.com/weidongjian/androidWheelView'
-                // 许可证名称和地址
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                // 开发者信息
-                developers {
-                    developer {
-                        name = 'weidongjian'
-                        email = 'weidongjian@gmail.com'
-                    }
-                }
-                // 版本控制仓库地址
-                scm {
-                    url = 'https://github.com/weidongjian/androidWheelView'
-                    connection = 'https://github.com/weidongjian/androidWheelView.git'
-                    developerConnection = 'git@github.com:weidongjian/androidWheelView.git'
-                }
-                // 解决依赖关系
-                withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
-                    project.configurations.all { configuration ->
-                        def name = configuration.name
-                        if (name != "implementation" && name != "compile" && name != "api") {
-                            return
-                        }
-                        println(configuration)
-                        configuration.dependencies.each {
-                            println(it)
-                            if (it.name == "unspecified") {
-                                // 忽略无法识别的
-                                return
-                            }
-                            def dependencyNode = dependenciesNode.appendNode('dependency')
-                            dependencyNode.appendNode('groupId', it.group)
-                            dependencyNode.appendNode('artifactId', it.name)
-                            dependencyNode.appendNode('version', it.version)
-                            if (name == "api" || name == "compile") {
-                                dependencyNode.appendNode("scope", "compile")
-                            } else { // implementation
-                                dependencyNode.appendNode("scope", "runtime")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    // 定义发布到哪里
-    repositories {
-        maven {
-            // 发布的位置，这里根据发布的版本区分了 SNAPSHOT 和最终版本两种情况
-            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            credentials {
-                // 这里就是之前在 issues.sonatype.org 注册的账号
-                username project.sonatypeUsername
-                password project.sonatypePassword
-            }
-        }
-    }
-}
-
-signing {
-    sign publishing.publications
 }
 
 
