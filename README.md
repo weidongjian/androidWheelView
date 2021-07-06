@@ -6,12 +6,12 @@
 由于Jcenter库停止维护，现迁移到jitpack，依赖如下
 在根目录的build.gradle增加jitpack
 ```gradle
-	allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
 	}
+}
 ```
 
 ## gradle依赖
