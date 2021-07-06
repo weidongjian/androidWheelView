@@ -3,10 +3,21 @@
 
 具体的请查看这个博客：http://www.jianshu.com/p/fa7adfa90c68
 
+由于Jcenter库停止维护，现迁移到jitpack，依赖如下
+在根目录的build.gradle增加jitpack
+```gradle
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+
 ## gradle依赖
 ```gradle
 dependencies {
-    api 'com.weigan:loopView:0.2.2'
+    implementation 'com.github.weidongjian:androidWheelView:0.9.1'
 }
 ```
 
@@ -22,9 +33,10 @@ dependencies {
 
 1. 设置初始位置：调用`setInitPosition()`，不是`setCurrentPosition()`。
 
-
-
 ### 更新历史
+**版本号：0.9.1 更新时间：2021.7.06
+修复setCurrentPosition后，对应的位置不会回调的异常
+
 **版本号：0.2.2 更新时间：2019.10.30
 修复设置当前位置为0无效的异常
 
