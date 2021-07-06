@@ -4,7 +4,7 @@
 具体的请查看这个博客：http://www.jianshu.com/p/fa7adfa90c68
 
 由于Jcenter库停止维护，现迁移到jitpack，依赖如下
-在根目录的build.gradle增加jitpack
+### 在根目录的build.gradle增加jitpack
 ```gradle
 allprojects {
 	repositories {
@@ -14,7 +14,7 @@ allprojects {
 }
 ```
 
-## gradle依赖
+### 添加依赖
 ```gradle
 dependencies {
     implementation 'com.github.weidongjian:androidWheelView:0.9.1'
