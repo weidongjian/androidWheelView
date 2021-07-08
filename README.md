@@ -17,7 +17,7 @@ allprojects {
 ### 添加依赖
 ```gradle
 dependencies {
-    implementation 'com.github.weidongjian:androidWheelView:0.9.1'
+    implementation 'com.github.weidongjian:androidWheelView:1.0.0'
 }
 ```
 
@@ -25,7 +25,7 @@ dependencies {
 
 效果图如下：
 
-![DemoView](/photo/Gif_20161230_162613.gif)
+![DemoView](/photo/1625735942774356.gif)
 
 
 
@@ -34,6 +34,9 @@ dependencies {
 1. 设置初始位置：调用`setInitPosition()`，不是`setCurrentPosition()`。
 
 ### 更新历史
+**版本号：1.0.0 更新时间：2021.7.08**
+
+增加对无3D效果的配置：app:awv_isCurve="false"
 **版本号：0.9.1 更新时间：2021.7.06**
 
 修复setCurrentPosition后，对应的位置不会回调的异常
