@@ -28,8 +28,8 @@ android {
 
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
-    api project(':loopview')
+//    api project(':loopview')
     api 'com.android.support:appcompat-v7:28.0.0'
-//    api 'com.github.weidongjian:androidWheelView:0.9.1'
+    api 'com.github.weidongjian:androidWheelView:1.0.0'
 }
 
