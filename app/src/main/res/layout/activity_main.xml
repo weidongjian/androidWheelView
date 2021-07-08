@@ -1,5 +1,4 @@
-<LinearLayout
-    android:id="@+id/rootview"
+<LinearLayout android:id="@+id/rootview"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,22 +7,47 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-
-    <Button
-        android:text="Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button"
-        />
+    <TextView
+        android:layout_marginTop="10dp"
+        android:textSize="20dp"
+        android:text="曲面效果"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <com.weigan.loopview.LoopView
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:id="@+id/loopView"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         app:awv_textsize="18"
-        app:awv_isLoop="false"
-        />
+        app:awv_isLoop="false" />
+
+    <Button
+        android:text="选中第4个位置"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button" />
+
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:textSize="20dp"
+        android:text="无曲面效果"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.weigan.loopview.LoopView
+        android:layout_marginTop="10dp"
+        android:id="@+id/loopView2"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        app:awv_isCurve="false"
+        app:awv_itemsVisibleCount="7"
+        app:awv_textsize="18"
+        app:awv_isLoop="false" />
+
 
     <Button
         android:text="Inside scrollView"

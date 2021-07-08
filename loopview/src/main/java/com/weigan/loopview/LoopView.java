@@ -33,7 +33,9 @@ public class LoopView extends View {
 
     private static final float DEFAULT_LINE_SPACE = 1f;
 
-    private static final int DEFAULT_VISIBIE_ITEMS = 9;
+    private static final int DEFAULT_VISIBLE_ITEMS = 9;
+
+    private static boolean ENABLE_CURVE = true;
 
     public static final int SCROLL_STATE_IDLE = 0;     // 停止滚动
     public static final int SCROLL_STATE_SETTING = 1;  // 用户设置
@@ -65,7 +67,7 @@ public class LoopView extends View {
     List<IndexString> items;
 
     int textSize;
-    int itemTextHeight;
+    int itemTextHeight; //单个item的高度
 
     //文本的高度
     int textHeight;
@@ -88,14 +90,14 @@ public class LoopView extends View {
 
     int itemsVisibleCount;
 
-    HashMap<Integer,IndexString> drawingStrings;
+    HashMap<Integer, IndexString> drawingStrings;
 //    HashMap<String,Integer> drawingStr
 
-    int measuredHeight;
+    int measuredHeight; //布局定义的高度
     int measuredWidth;
 
-    int halfCircumference;
-    int radius;
+    int halfCircumference;//半圆的周长
+    int radius; //半径
 
     private int mOffset = 0;
     private float previousY;
@@ -107,8 +109,11 @@ public class LoopView extends View {
 
     private Typeface typeface = Typeface.MONOSPACE;
 
+    private boolean isEnableCurve = ENABLE_CURVE;
+
     /**
      * set text line space, must more than 1
+     *
      * @param lineSpacingMultiplier
      */
     public void setLineSpacingMultiplier(float lineSpacingMultiplier) {
@@ -189,17 +194,21 @@ public class LoopView extends View {
             outerTextColor = typedArray.getInteger(R.styleable.LoopView_awv_outerTextColor, 0xffafafaf);
             dividerColor = typedArray.getInteger(R.styleable.LoopView_awv_dividerTextColor, 0xffc5c5c5);
             itemsVisibleCount =
-                    typedArray.getInteger(R.styleable.LoopView_awv_itemsVisibleCount, DEFAULT_VISIBIE_ITEMS);
+                    typedArray.getInteger(R.styleable.LoopView_awv_itemsVisibleCount, DEFAULT_VISIBLE_ITEMS);
             if (itemsVisibleCount % 2 == 0) {
-                itemsVisibleCount = DEFAULT_VISIBIE_ITEMS;
+                itemsVisibleCount = DEFAULT_VISIBLE_ITEMS;
             }
             isLoop = typedArray.getBoolean(R.styleable.LoopView_awv_isLoop, true);
+            isEnableCurve = typedArray.getBoolean(R.styleable.LoopView_awv_isCurve, ENABLE_CURVE);
             typedArray.recycle();
         }
 
-        drawingStrings=new HashMap<>();
+        drawingStrings = new HashMap<>();
         totalScrollY = 0;
         initPosition = -1;
+
+        //初始化画笔
+        initPaintsIfPossible();
     }
 
 
@@ -266,7 +275,12 @@ public class LoopView extends View {
         textHeight = tempRect.height();
         halfCircumference = (int) (measuredHeight * Math.PI / 2);
 
-        itemTextHeight = (int) (halfCircumference / (lineSpacingMultiplier * (itemsVisibleCount - 1)));
+        if (isEnableCurve) {
+            itemTextHeight = (int) (halfCircumference / (lineSpacingMultiplier * (itemsVisibleCount - 1)));
+        } else {
+            itemTextHeight = measuredHeight / itemsVisibleCount;
+        }
+
 
         radius = measuredHeight / 2;
         firstLineY = (int) ((measuredHeight - lineSpacingMultiplier * itemTextHeight) / 2.0F);
@@ -474,7 +488,8 @@ public class LoopView extends View {
             }
         }
 
-        int j2 = (int) (totalScrollY % (lineSpacingMultiplier * itemTextHeight));
+        //偏移量
+        int j2 = totalScrollY % itemTextHeight;
         // put value to drawingString
         int k1 = 0;
         while (k1 < itemsVisibleCount) {
@@ -507,12 +522,20 @@ public class LoopView extends View {
             canvas.save();
             float itemHeight = itemTextHeight * lineSpacingMultiplier;
             double radian = ((itemHeight * i - j2) * Math.PI) / halfCircumference;
-            if (radian >= Math.PI || radian <= 0) {
+            if ((radian >= Math.PI || radian <= 0) && isEnableCurve) {
                 canvas.restore();
             } else {
-                int translateY = (int) (radius - Math.cos(radian) * radius - (Math.sin(radian) * itemTextHeight) / 2D);
+                int translateY;
+                if (isEnableCurve) {
+                    translateY = (int) (radius - Math.cos(radian) * radius - (Math.sin(radian) * itemTextHeight) / 2D);
+                } else {
+                    translateY = (int) (itemHeight * i - j2);
+                    Log.d("weigan", "translateY " + translateY + " pos " + i + " j2 " + j2);
+                }
                 canvas.translate(0.0F, translateY);
-                canvas.scale(1.0F, (float) Math.sin(radian));
+                if (isEnableCurve) {
+                    canvas.scale(1.0F, (float) Math.sin(radian));
+                }
                 if (translateY <= firstLineY && itemTextHeight + translateY >= firstLineY) {
                     // first divider
                     canvas.save();
@@ -594,7 +617,6 @@ public class LoopView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        initPaintsIfPossible();
         remeasure();
     }
 

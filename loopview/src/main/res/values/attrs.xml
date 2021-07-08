@@ -8,6 +8,7 @@
         <attr name="awv_dividerTextColor" format="integer" />
         <attr name="awv_itemsVisibleCount" format="integer" />
         <attr name="awv_isLoop" format="boolean" />
+        <attr name="awv_isCurve" format="boolean" />
         <attr name="awv_initialPosition" format="integer" />
         <attr name="awv_scaleX" format="float" />
     </declare-styleable>
