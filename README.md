@@ -37,6 +37,7 @@ dependencies {
 **版本号：1.0.0 更新时间：2021.7.08**
 
 增加对无3D效果的配置：app:awv_isCurve="false"
+
 **版本号：0.9.1 更新时间：2021.7.06**
 
 修复setCurrentPosition后，对应的位置不会回调的异常
