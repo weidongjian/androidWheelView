@@ -67,7 +67,7 @@ public class DialogActivity extends AppCompatActivity {
 
             }
         });
-        // 设置原始数据
+        // 设置原始数据  测试提交触发构建 travis CI
         loopView.setItems(list);
 
         AlertDialog alertDialog = dialogBuilder.create();
