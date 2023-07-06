@@ -462,6 +462,32 @@ public class LoopView extends View {
         }
     }
 
+
+    /**
+     * scroll to designated item
+     *
+     * @param i
+     */
+    public void smoothScrollToItem(int i) {
+        if (items == null || items.isEmpty()) {
+            return;
+        }
+        if (i < 0) {
+            i = 0;
+        }
+        if (i > items.size() - 1) {
+            i = items.size() - 1;
+        }
+        cancelFuture();
+        float itemHeight = lineSpacingMultiplier * maxTextHeight;
+        int i1 = i - getSelectedItem();
+        if (i1 == 0)
+            return;
+        mFuture = mExecutor.scheduleWithFixedDelay(new SmoothScrollTimerTask(this, (int) (itemHeight * i1)), 0, 15, TimeUnit.MILLISECONDS);
+        invalidate();
+    }
+
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
